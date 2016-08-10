@@ -30,10 +30,20 @@ class ItemRestService(system: ActorSystem) extends AbstractRestService[Item](sys
           complete(getAll)
         }
       }
-    } ~
-    path(getUriPath / IntNumber) { id =>
+    } ~ path(getUriPath / IntNumber) { id =>
       cors {
-        complete(getById(id))
+        get {
+          complete(getById(id))
+        }
+      }
+    } ~ path(getUriPath / IntNumber) { id =>
+      cors {
+        put {
+            entity(as[Item]) { item => {
+              complete(update(item))
+            }
+          }
+        }
       }
     }
 }

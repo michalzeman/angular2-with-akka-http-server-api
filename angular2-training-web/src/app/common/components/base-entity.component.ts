@@ -34,6 +34,7 @@ export abstract class BaseEntityComponent<E extends BaseEntity> implements OnIni
   ngOnInit() {
     console.log('ngOnInit() ->');
     this.title = this.getTitle();
+    this.buildFormControlGroup(undefined);
     this.sub = this.route.params.subscribe(
       params => {
         if (params['id']) {
@@ -42,8 +43,6 @@ export abstract class BaseEntityComponent<E extends BaseEntity> implements OnIni
             console.debug('Test get()-> ', entity);
             // this.buildFormControlGroup(entity)
           });
-        } else {
-          this.buildFormControlGroup(undefined);
         }
       }
     );

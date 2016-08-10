@@ -120,6 +120,7 @@ export abstract class BaseEntityServiceImpl<E extends BaseEntity> implements Ent
   save(entity:E):Observable<E> {
     console.debug('save -> ', entity);
     //noinspection TypeScriptValidateTypes
+    entity.id = -1; // workaround for backed !!! there must be defined id!
     return this.http.put(this.url, entity)
       .map(this.extractData).catch(this.handleError);
   }

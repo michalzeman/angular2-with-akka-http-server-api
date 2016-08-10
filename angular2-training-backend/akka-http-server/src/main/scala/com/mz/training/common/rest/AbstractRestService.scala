@@ -7,7 +7,7 @@ import akka.http.scaladsl.model.headers.{`Access-Control-Allow-Credentials`, `Ac
 import akka.http.scaladsl.server.Directives._
 import spray.json.DefaultJsonProtocol
 import akka.util.Timeout
-import com.mz.training.common.services.{FindById, Found, GetAll}
+import com.mz.training.common.services._
 import com.mz.training.domains.EntityId
 
 import scala.concurrent.{Future, Promise}
@@ -65,6 +65,19 @@ abstract class AbstractRestService[E <: EntityId](system: ActorSystem) extends D
         jdbc ! Rollback
         p.failure(e)
       }
+    }
+    }
+    p.future
+  }
+
+  def update(entity: E): Future[Option[E]] = {
+    val p = Promise[Option[E]]()
+    getServiceActor onSuccess { case (service, jdbc) => (service ? Update(entity)).mapTo[Future[UpdateResult[E]]] onComplete {
+      case Success(s) => s match {
+        case u: Updated[E] => p.success(Some(u.entity))
+        case _ => p.success(None)
+      }
+      case Failure(e) => p.failure(e)
     }
     }
     p.future

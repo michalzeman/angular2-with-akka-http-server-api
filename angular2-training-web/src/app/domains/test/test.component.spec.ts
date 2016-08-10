@@ -56,7 +56,6 @@ describe('Test', () => {
   it('first test', inject([TestComponent, MockBackend], (test, mockBackend) => {
     let response = new Test();
     response.id = 1;
-    response.version = 10;
 
     let responseOptions = new ResponseOptions({body: response});
     mockBackend.connections.subscribe(

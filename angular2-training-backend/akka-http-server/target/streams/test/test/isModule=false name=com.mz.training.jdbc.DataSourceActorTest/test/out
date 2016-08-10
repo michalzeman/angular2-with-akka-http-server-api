@@ -1,0 +1,14 @@
+[0m[[0minfo[0m] [0m[32mDataSourceActorTest:[0m[0m
+[0m[[0minfo[0m] [0m[31m- init dataSource *** FAILED ***[0m[0m
+[0m[[0minfo[0m] [0m[31m  java.lang.AssertionError: assertion failed: timeout (5 seconds) during expectMsgClass waiting for class com.mz.training.common.jdbc.DataSourceActor$ConnectionResult[0m[0m
+[0m[[0minfo[0m] [0m[31m  at scala.Predef$.assert(Predef.scala:170)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at akka.testkit.TestKitBase$class.expectMsgClass_internal(TestKit.scala:435)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at akka.testkit.TestKitBase$class.expectMsgType(TestKit.scala:417)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at akka.testkit.TestKit.expectMsgType(TestKit.scala:737)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at com.mz.training.jdbc.DataSourceActorTest$$anonfun$1.apply$mcV$sp(DataSourceActorTest.scala:35)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at com.mz.training.jdbc.DataSourceActorTest$$anonfun$1.apply(DataSourceActorTest.scala:32)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at com.mz.training.jdbc.DataSourceActorTest$$anonfun$1.apply(DataSourceActorTest.scala:32)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at org.scalatest.Transformer$$anonfun$apply$1.apply$mcV$sp(Transformer.scala:22)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at org.scalatest.OutcomeOf$class.outcomeOf(OutcomeOf.scala:85)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at org.scalatest.OutcomeOf$.outcomeOf(OutcomeOf.scala:104)[0m[0m
+[0m[[0minfo[0m] [0m[31m  ...[0m[0m

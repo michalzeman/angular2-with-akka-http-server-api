@@ -32,20 +32,20 @@ export class ItemService extends BaseEntityServiceImpl<Item> {
     super(delegateService, http, '/items');
   }
 
-  getAll(): Observable<Item[]> {
-    return Observable.create(observer => {
-        observer.next(this._items);
-        observer.complete();
-      }
-    )
-  }
+  // getAll(): Observable<Item[]> {
+  //   return Observable.create(observer => {
+  //       observer.next(this._items);
+  //       observer.complete();
+  //     }
+  //   )
+  // }
 
-  get(id: number): Observable<Item> {
-    return Observable.create(observer => {
-      let item:Item = this._items.find(item => item.id === id);
-      observer.next((item)? item:undefined);
-      observer.complete();
-    });
-  }
+  // get(id: number): Observable<Item> {
+  //   return Observable.create(observer => {
+  //     let item:Item = this._items.find(item => item.id === id);
+  //     observer.next((item)? item:undefined);
+  //     observer.complete();
+  //   });
+  // }
 
 }

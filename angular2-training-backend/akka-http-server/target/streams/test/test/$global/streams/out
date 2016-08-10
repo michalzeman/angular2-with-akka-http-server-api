@@ -1,0 +1,28 @@
+[0m[[0mdebug[0m] [0mRunning TaskDef(com.mz.training.users.UserServiceSpec, org.scalatest.tools.Framework$$anon$1@35fb166e, false, [SuiteSelector])[0m
+[0m[[0mdebug[0m] [0mRunning TaskDef(com.mz.training.repositories.AddressRepositoryActorTest, org.scalatest.tools.Framework$$anon$1@35fb166e, false, [SuiteSelector])[0m
+[0m[[0mdebug[0m] [0mRunning TaskDef(com.mz.training.services.AddressServiceActorTest, org.scalatest.tools.Framework$$anon$1@35fb166e, false, [SuiteSelector])[0m
+[0m[[0mdebug[0m] [0mRunning TaskDef(com.mz.training.repositories.UserRepositoryActorTest, org.scalatest.tools.Framework$$anon$1@35fb166e, false, [SuiteSelector])[0m
+[0m[[0mdebug[0m] [0mRunning TaskDef(com.mz.training.jdbc.JDBCConnectionActorTest, org.scalatest.tools.Framework$$anon$1@35fb166e, false, [SuiteSelector])[0m
+[0m[[0mdebug[0m] [0mRunning TaskDef(com.mz.training.services.UserServiceActorIntegrationTest, org.scalatest.tools.Framework$$anon$1@35fb166e, false, [SuiteSelector])[0m
+[0m[[0mdebug[0m] [0mRunning TaskDef(com.mz.training.health.HealthRoutesSpec, org.scalatest.tools.Framework$$anon$1@35fb166e, false, [SuiteSelector])[0m
+[0m[[0mdebug[0m] [0mRunning TaskDef(com.mz.training.actions.UserActionActorIntegrationTest, org.scalatest.tools.Framework$$anon$1@35fb166e, false, [SuiteSelector])[0m
+[0m[[0mdebug[0m] [0mRunning TaskDef(com.mz.training.jdbc.DataSourceActorTest, org.scalatest.tools.Framework$$anon$1@35fb166e, false, [SuiteSelector])[0m
+[0m[[0mdebug[0m] [0mRunning TaskDef(com.mz.training.repositories.common.AbstractRepositoryActorTest, org.scalatest.tools.Framework$$anon$1@35fb166e, false, [SuiteSelector])[0m
+[0m[[0minfo[0m] [0m[36mRun completed in 36 seconds, 117 milliseconds.[0m[0m
+[0m[[0minfo[0m] [0m[36mTotal number of tests run: 20[0m[0m
+[0m[[0minfo[0m] [0m[36mSuites: completed 10, aborted 0[0m[0m
+[0m[[0minfo[0m] [0m[36mTests: succeeded 19, failed 1, canceled 0, ignored 0, pending 0[0m[0m
+[0m[[0minfo[0m] [0m[31m*** 1 TEST FAILED ***[0m[0m
+[0m[[0mdebug[0m] [0mPassed tests:[0m
+[0m[[0mdebug[0m] [0m	com.mz.training.repositories.common.AbstractRepositoryActorTest[0m
+[0m[[0mdebug[0m] [0m	com.mz.training.repositories.AddressRepositoryActorTest[0m
+[0m[[0mdebug[0m] [0m	com.mz.training.users.UserServiceSpec[0m
+[0m[[0mdebug[0m] [0m	com.mz.training.health.HealthRoutesSpec[0m
+[0m[[0mdebug[0m] [0m	com.mz.training.services.AddressServiceActorTest[0m
+[0m[[0mdebug[0m] [0m	com.mz.training.jdbc.JDBCConnectionActorTest[0m
+[0m[[0mdebug[0m] [0m	com.mz.training.repositories.UserRepositoryActorTest[0m
+[0m[[0mdebug[0m] [0m	com.mz.training.actions.UserActionActorIntegrationTest[0m
+[0m[[0mdebug[0m] [0m	com.mz.training.services.UserServiceActorIntegrationTest[0m
+[0m[[31merror[0m] [0mFailed tests:[0m
+[0m[[31merror[0m] [0m	com.mz.training.jdbc.DataSourceActorTest[0m
+[0m[[31merror[0m] [0m(test:[31mtest[0m) sbt.TestsFailedException: Tests unsuccessful[0m

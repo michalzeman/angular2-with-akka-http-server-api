@@ -44,9 +44,12 @@ export interface EntityService<E extends BaseEntity> {
 
 export abstract class BaseEntityServiceImpl<E extends BaseEntity> implements EntityService<E> {
 
+  protected url:string;
+
   constructor(protected delegateService: DelegateService,
               protected http:Http,
-              protected url:string) {
+              url:string) {
+    this.url = 'http://localhost:8080' + url
   }
 
   protected extractData(res:Response) {

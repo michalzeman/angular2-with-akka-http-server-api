@@ -1,0 +1,11 @@
+#Successful Tests
+#Wed Aug 10 09:59:03 CEST 2016
+com.mz.training.services.AddressServiceActorTest=1470815908935
+com.mz.training.health.HealthRoutesSpec=1470815910141
+com.mz.training.services.UserServiceActorIntegrationTest=1470815909558
+com.mz.training.jdbc.JDBCConnectionActorTest=1470815911165
+com.mz.training.actions.UserActionActorIntegrationTest=1470815943355
+com.mz.training.repositories.AddressRepositoryActorTest=1470815909165
+com.mz.training.users.UserServiceSpec=1470815910378
+com.mz.training.repositories.UserRepositoryActorTest=1470815909688
+com.mz.training.repositories.common.AbstractRepositoryActorTest=1470815910560

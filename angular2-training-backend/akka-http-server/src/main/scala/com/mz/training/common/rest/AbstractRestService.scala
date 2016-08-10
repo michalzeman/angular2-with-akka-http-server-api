@@ -72,9 +72,12 @@ abstract class AbstractRestService[E <: EntityId](system: ActorSystem) extends D
 
   def update(entity: E): Future[Option[E]] = {
     val p = Promise[Option[E]]()
-    getServiceActor onSuccess { case (service, jdbc) => (service ? Update(entity)).mapTo[Future[UpdateResult[E]]] onComplete {
+    getServiceActor onSuccess { case (service, jdbc) => (service ? Update(entity)).mapTo[UpdateResult[E]] onComplete {
       case Success(s) => s match {
-        case u: Updated[E] => p.success(Some(u.entity))
+        case u: Updated[E] => {
+          jdbc ! Commit
+          p.success(Some(u.entity))
+        }
         case _ => p.success(None)
       }
       case Failure(e) => p.failure(e)

@@ -1,4 +1,0 @@
-[0m[[0minfo[0m] [0m[32mHealthRoutesSpec:[0m[0m
-[0m[[0minfo[0m] [0m[32mThe HealthRoutes[0m[0m
-[0m[[0minfo[0m] [0m[32m- should return HTTP success for GET /health/ping[0m[0m
-[0m[[0minfo[0m] [0m[32m- should return HTTP success for GET /health/uptime[0m[0m

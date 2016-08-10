@@ -1,6 +1,0 @@
-[0m[[0minfo[0m] [0m[32mAddressServiceActorTest:[0m[0m
-[0m[[0minfo[0m] [0m[32m- 1. Create address[0m[0m
-[0m[[0minfo[0m] [0m[32m- 2. delete address[0m[0m
-[0m[[0minfo[0m] [0m[32m- 3. Find address by all attributes[0m[0m
-[0m[[0minfo[0m] [0m[32m- 4. Find or create address - create[0m[0m
-[0m[[0minfo[0m] [0m[32m- 5. Find or create address - find[0m[0m

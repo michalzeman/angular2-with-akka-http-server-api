@@ -33,26 +33,10 @@ abstract class AbstractDomainServiceActor[E <: EntityId](repositoryProps: Props)
 
   protected def getAll: Future[Found[E]] = {
     log.info(s"${getClass.getCanonicalName} getAll ->")
-    val p = Promise[Found[E]]
-    (repository ? repositories.SelectAll).mapTo[List[E]] onComplete {
-      case Success(s) => {
-        log.info("findUserById - success!")
-        p.success(Found(s))
-//        s match {
-//          case s:Some[E] => p.success(Found[E](List(s.get)))
-//          case None => p.success(Found(Nil))
-//          case _ => {
-//            log.warning("Unsupported message type!")
-//            p.failure(new RuntimeException("Unsupported message type"))
-//          }
-//        }
-      }
-      case Failure(f) => {
-        log.error(f, f.getMessage)
-        p.failure(f)
-      }
-    }
-    p.future
+    (repository ? repositories.SelectAll).mapTo[List[E]].map(result => {
+      log.info("findUserById - success!")
+      Found(result)
+    })
   }
 
   /**
@@ -63,18 +47,10 @@ abstract class AbstractDomainServiceActor[E <: EntityId](repositoryProps: Props)
     */
   protected def create(entity: E): Future[Created] = {
     log.info(s"${getClass.getCanonicalName} create ->")
-    val p = Promise[Created]
-    (repository ? repositories.Insert(entity)).mapTo[repositories.Inserted] onComplete {
-      case Success(s) => {
-        log.info("createUser - success!")
-        p.success(Created(s.id))
-      }
-      case Failure(f) => {
-        log.error(f, f.getMessage)
-        p.failure(f)
-      }
-    }
-    p.future
+    (repository ? repositories.Insert(entity)).mapTo[repositories.Inserted].map(result => {
+      log.info("createUser - success!")
+      Created(result.id)
+    })
   }
 
   /**
@@ -85,25 +61,13 @@ abstract class AbstractDomainServiceActor[E <: EntityId](repositoryProps: Props)
     */
   protected def findById(id: Long): Future[Found[E]] = {
     log.info(s"${getClass.getCanonicalName} findById ->")
-    val p = Promise[Found[E]]
-    (repository ? repositories.SelectById(id)).mapTo[Option[E]] onComplete {
-      case Success(s) => {
-        log.info("findUserById - success!")
-        s match {
-          case s:Some[E] => p.success(Found[E](List(s.get)))
-          case None => p.success(Found(Nil))
-          case _ => {
-            log.warning("Unsupported message type!")
-            p.failure(new RuntimeException("Unsupported message type"))
-          }
-        }
+    (repository ? repositories.SelectById(id)).mapTo[Option[E]].map(result => {
+      log.info("findUserById - success!")
+      result match {
+        case s:Some[E] => Found[E](List(s.get))
+        case None => Found(Nil)
       }
-      case Failure(f) => {
-        log.error(f, f.getMessage)
-        p.failure(f)
-      }
-    }
-    p.future
+    })
   }
 
   /**
@@ -113,19 +77,11 @@ abstract class AbstractDomainServiceActor[E <: EntityId](repositoryProps: Props)
     * @return Future[UserDeleted]
     */
   protected def delete(entity: E): Future[Deleted] = {
-
-    val p = Promise[Deleted]
-    (repository ? repositories.Delete(entity.id)).mapTo[Boolean] onComplete {
-      case Success(success) => {
-        log.info("User delete success!")
-        p.success(Deleted())
-      }
-      case Failure(f) => {
-        log.error(f, f.getMessage)
-        p.failure(f)
-      }
-    }
-    p.future
+    log.info(s"${getClass.getCanonicalName} delete ->")
+    (repository ? repositories.Delete(entity.id)).mapTo[Boolean].map(result => {
+      log.info("User delete success!")
+      Deleted()
+    })
   }
 
   /**
@@ -135,21 +91,11 @@ abstract class AbstractDomainServiceActor[E <: EntityId](repositoryProps: Props)
     * @return
     */
   protected def update(entity: E): Future[UpdateResult[E]] = {
-
-    val p = Promise[UpdateResult[E]]
-    (repository ? repositories.Update(entity)).mapTo[Boolean] onComplete {
-      case Success(true) => {
-        p.success(Updated(entity))
-      }
-      case Success(false) => {
-        p.success(NotUpdated(entity))
-      }
-      case Failure(f) => {
-        log.error(f, f.getMessage)
-        p.failure(f)
-      }
-    }
-    p.future
+    log.info(s"${getClass.getCanonicalName} update ->")
+    (repository ? repositories.Update(entity)).mapTo[Boolean].map(result => {
+      if (result) Updated(entity)
+      else NotUpdated(entity)
+    })
   }
 
   @throws[Exception](classOf[Exception])

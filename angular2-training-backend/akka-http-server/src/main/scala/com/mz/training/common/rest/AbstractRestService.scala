@@ -4,18 +4,15 @@ import akka.actor.{ActorRef, ActorSystem}
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
 import akka.http.scaladsl.model.HttpHeader
 import akka.http.scaladsl.model.headers.{`Access-Control-Allow-Credentials`, `Access-Control-Allow-Headers`, `Access-Control-Max-Age`}
-import akka.http.scaladsl.server.Directives._
 import spray.json.DefaultJsonProtocol
 import akka.util.Timeout
 import com.mz.training.common.services._
 import com.mz.training.domains.EntityId
 
-import scala.concurrent.{Future, Promise}
+import scala.concurrent.{Future}
 import scala.concurrent.duration._
-import scala.util.{Failure, Success}
 import akka.pattern._
-import com.mz.training.common.jdbc.JDBCConnectionActor.{Commit, Rollback}
-import com.mz.training.domains.user.User
+import com.mz.training.common.jdbc.JDBCConnectionActor.{Commit}
 
 /**
   * Created by zemi on 10/08/16.
@@ -33,57 +30,38 @@ abstract class AbstractRestService[E <: EntityId](system: ActorSystem) extends D
   def getUriPath: String
 
   def getAll: Future[Seq[E]] = {
-    val p = Promise[Seq[E]]()
-    getServiceActor onSuccess { case (service, jdbc) => (service ? GetAll).mapTo[Found[E]] onComplete {
-      case Success(s) => {
-        jdbc ! Commit
-        p.success(s.results)
-      }
-      case Failure(e) => {
-        jdbc ! Rollback
-        p.failure(e)
-      }
-    }
-    }
-    p.future
+    getServiceActor.flatMap(actors => (actors._1 ? GetAll).mapTo[Found[E]].map(result => {
+      actors._2 ! Commit
+      result.results
+    }))
   }
 
   def getById(id: Int): Future[Option[E]] = {
-    val p = Promise[Option[E]]()
-    getServiceActor onSuccess { case (service, jdbc) => (service ? FindById(id)).mapTo[Found[E]] onComplete {
-      case Success(s) => s.results.filter(item => item.id == id) match {
+    getServiceActor.flatMap(actors => (actors._1 ? FindById(id)).mapTo[Found[E]].map(result => {
+      actors._2 ! Commit
+      result.results match {
         case result :: xs => {
-          jdbc ! Commit
-          p.success(Some(result))
+          Some(result)
         }
         case _ => {
-          jdbc ! Commit
-          p.success(None)
+          None
         }
       }
-      case Failure(e) => {
-        jdbc ! Rollback
-        p.failure(e)
-      }
-    }
-    }
-    p.future
+    }))
   }
 
   def update(entity: E): Future[Option[E]] = {
-    val p = Promise[Option[E]]()
-    getServiceActor onSuccess { case (service, jdbc) => (service ? Update(entity)).mapTo[UpdateResult[E]] onComplete {
-      case Success(s) => s match {
+    getServiceActor.flatMap(actors => (actors._1 ? Update(entity)).mapTo[UpdateResult[E]].map(result => {
+      actors._2 ! Commit
+      result match {
         case u: Updated[E] => {
-          jdbc ! Commit
-          p.success(Some(u.entity))
+          Some(u.entity)
         }
-        case _ => p.success(None)
+        case _ => {
+          None
+        }
       }
-      case Failure(e) => p.failure(e)
-    }
-    }
-    p.future
+    }))
   }
 
   override val corsAllowOrigins: List[String] = List("*")

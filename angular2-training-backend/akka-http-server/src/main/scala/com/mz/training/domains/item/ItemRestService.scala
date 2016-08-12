@@ -15,8 +15,7 @@ class ItemRestService(system: ActorSystem) extends AbstractRestService[Item](sys
   override def getServiceActor: Future[(ActorRef, ActorRef)] = {
     Future {
       val jdbcConActor = system.actorOf(JDBCConnectionActor.props)
-      val itemRepositoryProps = ItemRepositoryActor.props(jdbcConActor)
-      val itemService = system.actorOf(ItemServiceActor.props(itemRepositoryProps))
+      val itemService = system.actorOf(ItemServiceActor.props(jdbcConActor))
       (itemService, jdbcConActor)
     }
   }
@@ -24,25 +23,30 @@ class ItemRestService(system: ActorSystem) extends AbstractRestService[Item](sys
   override def getUriPath: String = "items"
 
   val routes =
-    path(getUriPath) {
-      cors {
+    cors {
+      path(getUriPath) {
         get {
           complete(getAll)
         }
-      }
-    } ~ path(getUriPath / IntNumber) { id =>
-      cors {
-        get {
-          complete(getById(id))
-        }
-      }
-    } ~ path(getUriPath / IntNumber) { id =>
-      cors {
-        put {
-            entity(as[Item]) { item => {
-              complete(update(item))
-            }
+      } ~
+        path(getUriPath / IntNumber) { id =>
+          get {
+            complete(getById(id))
           }
+        } ~
+        path(getUriPath / IntNumber) { id =>
+          put {
+            entity(as[Item]) { item => complete(update(item))}
+          }
+        } ~
+        path(getUriPath / LongNumber) { id =>
+          delete {
+            complete(deleteById(id))
+          }
+        } ~
+      path(getUriPath) {
+        post {
+          entity(as[Item]) {item => complete(create(item))}
         }
       }
     }

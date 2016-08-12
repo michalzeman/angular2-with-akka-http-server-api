@@ -25,7 +25,7 @@ export class ItemComponent extends BaseEntityComponent<Item> {
 
   mapDomainFormMetadata(entity: Item): FormMetadata<any>[] {
     return [
-      FormMetadata.getInstance<number>('id', 'textbox', false, 'Id', false, entity),
+      // FormMetadata.getInstance<number>('id', 'textbox', false, 'Id', false, entity),
       FormMetadata.getInstance<string>('name', 'textbox', true, 'Name', true, entity),
       FormMetadata.getInstance<string>('description', 'textbox', true, 'Description', true, entity),
     ];

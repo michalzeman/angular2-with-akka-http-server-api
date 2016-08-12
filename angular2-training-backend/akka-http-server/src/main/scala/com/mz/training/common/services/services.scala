@@ -18,6 +18,8 @@ package object services {
 
   case class Delete[E <: EntityId](entity: E)
 
+  case class DeleteById(id: Long)
+
   case class Deleted()
 
   case class GetAll[E <: EntityId]()

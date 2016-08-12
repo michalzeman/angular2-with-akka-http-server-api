@@ -100,7 +100,7 @@ export abstract class BaseEntityServiceImpl<E extends BaseEntity> implements Ent
 
   delete(entity:E):Observable<{}> {
     console.debug('delete -> ', entity);
-    return this.http.delete(this.url + '/' + entity.id)
+    return this.http.delete(this.url + '/' + entity.id.toString())
       .map(this.extractData).catch(this.handleError);
   }
 
@@ -121,7 +121,7 @@ export abstract class BaseEntityServiceImpl<E extends BaseEntity> implements Ent
     console.debug('save -> ', entity);
     //noinspection TypeScriptValidateTypes
     entity.id = -1; // workaround for backed !!! there must be defined id!
-    return this.http.put(this.url, entity)
+    return this.http.post(this.url, entity)
       .map(this.extractData).catch(this.handleError);
   }
 

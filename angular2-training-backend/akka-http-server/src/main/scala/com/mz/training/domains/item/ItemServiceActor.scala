@@ -1,6 +1,6 @@
 package com.mz.training.domains.item
 
-import akka.actor.Props
+import akka.actor.{ActorRef, Props}
 import com.mz.training.common.services.AbstractDomainServiceActor
 
 /**
@@ -11,5 +11,11 @@ class ItemServiceActor(itemRepositoryProps: Props) extends AbstractDomainService
 }
 
 object ItemServiceActor {
+
   def props(itemRepositoryProps: Props): Props = Props(classOf[ItemServiceActor], itemRepositoryProps)
+
+  def props(jdbcConActor: ActorRef): Props = {
+    val itemRepositoryProps = ItemRepositoryActor.props(jdbcConActor)
+    props(itemRepositoryProps)
+  }
 }

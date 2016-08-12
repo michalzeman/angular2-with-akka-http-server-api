@@ -26,11 +26,17 @@ abstract class AbstractDomainServiceActor[E <: EntityId](repositoryProps: Props)
     case c:Create[E] => create(c.entity) pipeTo sender
     case FindById(id) => findById(id) pipeTo sender
     case d:Delete[E] => delete(d.entity) pipeTo sender
+    case DeleteById(id) => delete(id) pipeTo sender
     case u:Update[E]  => update(u.entity) pipeTo sender
     case GetAll => getAll pipeTo sender
     case _ => sender ! UnsupportedOperation
   }
 
+  /**
+    * List all entities from DB
+    * TODO: add pagination
+    * @return
+    */
   protected def getAll: Future[Found[E]] = {
     log.info(s"${getClass.getCanonicalName} getAll ->")
     (repository ? repositories.SelectAll).mapTo[List[E]].map(result => {
@@ -41,7 +47,7 @@ abstract class AbstractDomainServiceActor[E <: EntityId](repositoryProps: Props)
 
   /**
     * Create
- *
+    *
     * @param entity
     * @return
     */
@@ -79,6 +85,19 @@ abstract class AbstractDomainServiceActor[E <: EntityId](repositoryProps: Props)
   protected def delete(entity: E): Future[Deleted] = {
     log.info(s"${getClass.getCanonicalName} delete ->")
     (repository ? repositories.Delete(entity.id)).mapTo[Boolean].map(result => {
+      log.info("User delete success!")
+      Deleted()
+    })
+  }
+
+  /**
+    * Delete by id
+    * @param id - id of entity
+    * @return
+    */
+  protected def delete(id: Long): Future[Deleted] = {
+    log.info(s"${getClass.getCanonicalName} delete ->")
+    (repository ? repositories.Delete(id)).mapTo[Boolean].map(result => {
       log.info("User delete success!")
       Deleted()
     })

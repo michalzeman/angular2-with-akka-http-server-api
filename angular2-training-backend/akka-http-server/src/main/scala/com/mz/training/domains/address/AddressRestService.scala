@@ -16,9 +16,7 @@ class AddressRestService(system: ActorSystem) extends AbstractRestService[Addres
   override def getServiceActor: Future[(ActorRef, ActorRef)] = {
     Future {
       val jdbcConActor = system.actorOf(JDBCConnectionActor.props)
-      val userRepositoryProps = UserRepositoryActor.props(jdbcConActor)
-      val addressRepositoryProps = AddressRepositoryActor.props(jdbcConActor)
-      val addressService = system.actorOf(AddressServiceActor.props(userRepositoryProps, addressRepositoryProps))
+      val addressService = system.actorOf(AddressServiceActor.props(jdbcConActor))
       (addressService, jdbcConActor)
     }
   }

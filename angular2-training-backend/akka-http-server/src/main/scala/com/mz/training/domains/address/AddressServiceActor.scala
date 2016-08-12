@@ -1,10 +1,11 @@
 package com.mz.training.domains.address
 
-import akka.actor.Props
+import akka.actor.{ActorRef, Props}
 import akka.pattern._
 import com.mz.training.common._
 import com.mz.training.common.services.AbstractDomainServiceActor
 import com.mz.training.domains.address.AddressServiceActor.FindOrCreateAddress
+import com.mz.training.domains.user.UserRepositoryActor
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -46,4 +47,15 @@ object AddressServiceActor {
   * @return Props
   */
   def props(userRepProps: Props, addressRepProps: Props): Props = Props(classOf[AddressServiceActor], userRepProps, addressRepProps)
+
+  /**
+    * Create props
+    * @param jdbcConActor
+    * @return Props
+    */
+  def props(jdbcConActor: ActorRef): Props = {
+    val userRepositoryProps = UserRepositoryActor.props(jdbcConActor)
+    val addressRepositoryProps = AddressRepositoryActor.props(jdbcConActor)
+    props(userRepositoryProps, addressRepositoryProps)
+  }
 }

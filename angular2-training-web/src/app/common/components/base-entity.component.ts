@@ -10,7 +10,7 @@ import {BaseDomainTemplate} from "../templates/baseDomain.template";
 
 export abstract class BaseEntityComponent<E extends BaseEntity> implements OnInit, OnDestroy {
 
-  // model: E;
+  model: E = undefined;
 
   form: ControlGroup;
 
@@ -42,6 +42,7 @@ export abstract class BaseEntityComponent<E extends BaseEntity> implements OnIni
           this.get(id).subscribe(entity => {
             console.debug('Test get()-> ', entity);
             // this.buildFormControlGroup(entity)
+            this.model = entity;
           });
         }
       }
@@ -82,7 +83,8 @@ export abstract class BaseEntityComponent<E extends BaseEntity> implements OnIni
   save(entity: E): void {
     console.debug('save() ->');
     this.entityService.save(entity).subscribe(
-      entity => this.buildFormControlGroup(entity)
+      // entity => this.buildFormControlGroup(entity)
+      result => this.goBack()
     );
   }
 
@@ -102,9 +104,13 @@ export abstract class BaseEntityComponent<E extends BaseEntity> implements OnIni
   onSubmit() {
     console.debug('onSubmit() ->', this.form.value);
     let model = <E>this.form.value;
-    if (model && model.id) {
+    // if (model && model.id) {
+    if (this.model && this.model.id) {
+      console.debug('onSubmit() -> update');
+      model.id = this.model.id;
       this.update(model);
     } else {
+      console.debug('onSubmit() -> save');
       this.save(model);
     }
   }

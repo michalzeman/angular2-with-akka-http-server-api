@@ -12,7 +12,7 @@ export class ItemTemplate extends BaseDomainTemplate<Item> {
 
   protected initMetadataArray(): DomainMetadata[] {
     return [
-      new DomainMetadata({key:'id', controlType:'textbox', table:false, label:'Id', required:false}),
+      // new DomainMetadata({key:'id', controlType:'textbox', table:false, label:'Id', required:false}),
       new DomainMetadata({key:'name', controlType:'textbox', table:true, label:'Name', required:true}),
       new DomainMetadata({key:'description', controlType:'textbox', table:true, label:'Description', required:true}),
     ];

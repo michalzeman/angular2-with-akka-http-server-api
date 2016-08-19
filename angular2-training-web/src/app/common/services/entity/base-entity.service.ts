@@ -3,6 +3,7 @@ import '../../../rxjs-operators';
 import {BaseEntity} from '../../entities/baseEntity';
 import {DelegateService} from "../delegate.service";
 import {Observable}     from 'rxjs/Rx';
+import {AlertMessage, ALERT_TYPE_DANGER} from "../../../domains/alert/alert-message";
 
 export interface ErrorResponse {
   data:string,
@@ -65,56 +66,49 @@ export abstract class BaseEntityServiceImpl<E extends BaseEntity> implements Ent
     }
   }
 
-  ///**
-  // * Handle error response
-  // * @param responseError
-  // * @param defer
-  // */
-  //protected handleError<T>(responseError:ErrorResponse) {
-  //    let statusCode = responseError.status.valueOf();
-  //    switch (statusCode) {
-  //        case -1:
-  //            //this.uiMessagesService.addDanger('Systemova chyba!');
-  //            break;
-  //        default:
-  //            //this.uiMessagesService.handleErrorResponse(responseError);
-  //            break;
-  //    }
-  //}
-
   protected handleError(error:any) {
     // In a real world app, we might use a remote logging infrastructure
     // We'd also dig deeper into the error to get a better message
-    let errMsg = (error.message) ? error.message :
-      error.status ? `${error.status} - ${error.statusText}` : 'Server error';
-    console.error(errMsg); // log to console instead
-    return Observable.throw(errMsg);
+    // let errMsg = (error.message) ? error.message : error.status ? `${error.status} - ${error.statusText}` : 'Server error';
+
+    console.error(error); // log to console instead
+    let statusCode = error.status.valueOf();
+    switch (statusCode) {
+      case -1:
+        this.delegateService.emitAlert(new AlertMessage('System error', ALERT_TYPE_DANGER));
+        break;
+      default:
+        let errMsg = error.text();
+        this.delegateService.emitAlert(new AlertMessage(errMsg.toString(), ALERT_TYPE_DANGER));
+        break;
+    }
+    return Observable.throw(error);
   }
 
   get(id:number):Observable<E> {
     console.debug('get ->');
     //noinspection TypeScriptValidateTypes
     return this.http.get(this.url +'/'+id)
-      .map(this.extractData).catch(this.handleError);
+      .map(response => this.extractData(response)).catch(error => this.handleError(error));
   }
 
   delete(entity:E):Observable<{}> {
     console.debug('delete -> ', entity);
     return this.http.delete(this.url + '/' + entity.id.toString())
-      .map(this.extractData).catch(this.handleError);
+      .map(response => this.extractData(response)).catch(error => this.handleError(error));
   }
 
   update(entity:E):Observable<E> {
     console.debug('update -> ', entity);
     //noinspection TypeScriptValidateTypes
     return this.http.put(this.url.concat('/').concat(entity.id.toString()), entity)
-      .map(this.extractData).catch(this.handleError);
+      .map(response => this.extractData(response)).catch(error => this.handleError(error));
   }
 
   getAll():Observable<E[]> {
     console.debug('getAll ->');
     return this.http.get(this.url)
-      .map(this.extractData).catch(this.handleError);
+      .map(this.extractData).catch(error => this.handleError(error));
   }
 
   save(entity:E):Observable<E> {
@@ -122,7 +116,7 @@ export abstract class BaseEntityServiceImpl<E extends BaseEntity> implements Ent
     //noinspection TypeScriptValidateTypes
     entity.id = -1; // workaround for backed !!! there must be defined id!
     return this.http.post(this.url, entity)
-      .map(this.extractData).catch(this.handleError);
+      .map(response => this.extractData(response)).catch(error => this.handleError(error));
   }
 
 }

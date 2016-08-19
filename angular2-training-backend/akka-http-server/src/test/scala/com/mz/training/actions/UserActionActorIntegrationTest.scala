@@ -13,6 +13,7 @@ import org.scalautils.ConversionCheckedTripleEquals
 
 import scala.concurrent.Await
 import scala.concurrent.duration._
+import scala.language.postfixOps
 
 /**
  * Created by zemi on 29. 10. 2015.
@@ -34,8 +35,8 @@ with MockitoSugar {
       for (i <- 1 to 10000) yield {
         Thread sleep 1
         val userAction = system.actorOf(Props[UserActionActor])
-        (userAction ? RegistrateUser(User(0, "FirstNameTest", "LastNameTest", None, None),
-          Address(0, "test", "82109", "9A", "testCity")))
+        userAction ? RegistrateUser(User(0, "FirstNameTest_" + i, "LastNameTest_" + i, None, None),
+          Address(0, "test_" + i, "82109", "9A" + i, "testCity_" + i))
       }
 
     for {future <- futures} yield Await.result(future, 1 minutes)

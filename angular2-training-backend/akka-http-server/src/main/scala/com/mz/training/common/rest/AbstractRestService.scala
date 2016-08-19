@@ -2,8 +2,6 @@ package com.mz.training.common.rest
 
 import akka.actor.{ActorRef, ActorSystem, PoisonPill}
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
-import akka.http.scaladsl.model.{HttpHeader, HttpMethods}
-import akka.http.scaladsl.model.headers.{`Access-Control-Allow-Credentials`, `Access-Control-Allow-Headers`, `Access-Control-Allow-Methods`, `Access-Control-Max-Age`}
 import spray.json.DefaultJsonProtocol
 import akka.util.Timeout
 import com.mz.training.common.services._
@@ -19,7 +17,7 @@ import scala.util.{Failure, Success}
 /**
   * Created by zemi on 10/08/16.
   */
-abstract class AbstractRestService[E <: EntityId](system: ActorSystem) extends DefaultJsonProtocol with SprayJsonSupport with CorsSupport {
+abstract class AbstractRestService[E <: EntityId](implicit system: ActorSystem) extends RestEndpointRoute with DefaultJsonProtocol with SprayJsonSupport {
 
   protected implicit val timeout: Timeout = 5000 milliseconds
 
@@ -84,7 +82,7 @@ abstract class AbstractRestService[E <: EntityId](system: ActorSystem) extends D
   def deleteById(id: Long): Future[Deteled] = {
     getServiceActor.flatMap(actors => completeAndCleanUpAct {
       (actors._1 ? DeleteById(id)).mapTo[Deleted].map(result => Deteled("Ok"))
-    } (actors))
+    }(actors))
   }
 
   def completeAndCleanUpAct[R](execute: => Future[R], test: Int): Future[R] = {
@@ -120,17 +118,4 @@ abstract class AbstractRestService[E <: EntityId](system: ActorSystem) extends D
   def destroyActors(actors: ActorRef*): Unit = {
     actors.foreach(actor => actor ! PoisonPill)
   }
-
-  override val corsAllowOrigins: List[String] = List("*")
-
-  override val corsAllowedHeaders: List[String] = List("Origin", "X-Requested-With", "Content-Type", "Accept", "Accept-Encoding", "Accept-Language", "Host", "Referer", "User-Agent")
-
-  override val corsAllowCredentials: Boolean = true
-
-  override val optionsCorsHeaders: List[HttpHeader] = List[HttpHeader](
-    `Access-Control-Allow-Methods`(HttpMethods.GET, HttpMethods.PUT, HttpMethods.POST, HttpMethods.DELETE),
-    `Access-Control-Allow-Headers`(corsAllowedHeaders.mkString(", ")),
-    `Access-Control-Max-Age`(60 * 60 * 24 * 20), // cache pre-flight response for 20 days
-    `Access-Control-Allow-Credentials`(corsAllowCredentials)
-  )
 }

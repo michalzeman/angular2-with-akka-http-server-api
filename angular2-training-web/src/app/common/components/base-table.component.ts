@@ -51,7 +51,7 @@ export abstract class BaseTableComponent<E extends BaseEntity> implements OnInit
    */
   getAll():void {
     console.debug('getAll() ->');
-    this.crudService.getAll().subscribe(data => this.data = data)
+    this.crudService.getAll().subscribe(data => this.data = data);
   }
 
   /**

@@ -1,0 +1,15 @@
+<div class="col-md-12" *ngFor="let alert of alertMessages">
+  <div [ngSwitch]="alert.type">
+    <div *ngSwitchCase="'alert-success'" class="col-md-12 alert alert-success alert-dismissible" role="alert">{{alert.message}}
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>
+    <div *ngSwitchCase="'alert-info'" class="col-md-12 alert alert-info alert-dismissible" role="alert">{{alert.message}}
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+    </div>
+    <div *ngSwitchCase="'alert-warning'" class="col-md-12 alert alert-warning alert-dismissible" role="alert">{{alert.message}}
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+    </div>
+    <div *ngSwitchCase="'alert-danger'" class="col-md-12 alert alert-danger alert-dismissible" role="alert">{{alert.message}}
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+    </div>
+  </div>
+</div>

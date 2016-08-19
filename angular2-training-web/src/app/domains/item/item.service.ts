@@ -3,7 +3,6 @@ import {BaseEntityServiceImpl} from "../../common/services/entity/base-entity.se
 import {Item} from "./Item";
 import {DelegateService} from "../../common/services/delegate.service";
 import {Http} from "@angular/http";
-import {Observable} from "rxjs";
 
 @Injectable()
 export class ItemService extends BaseEntityServiceImpl<Item> {

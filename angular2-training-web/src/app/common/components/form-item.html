@@ -1,15 +1,15 @@
-<div [ngFormModel]="form">
+<div [formGroup]="form">
   <div class="form-group">
     <label [attr.for]="data.metadata.key">{{data.metadata.label}}</label>
 
     <div [ngSwitch]="data.metadata.controlType">
 
-      <input *ngSwitchCase="'textbox'" [ngControl]="data.metadata.key"
+      <input *ngSwitchCase="'textbox'" [formControlName]="data.metadata.key"
              [id]="data.metadata.key" [type]="data.metadata.type" class="form-control">
       <!--<input [ngFormControl]="itemForm.controls[data.metadata.key]"-->
       <!--[id]="data.metadata.key" [type]="data.metadata.type">-->
 
-      <select [id]="data.metadata.key" *ngSwitchCase="'dropdown'" [ngControl]="data.metadata.key" class="form-control">
+      <select [id]="data.metadata.key" *ngSwitchCase="'dropdown'" [formControlName]="data.metadata.key" class="form-control">
         <option *ngFor="let opt of data.values" [value]="opt.metadata.key">{{opt.value}}</option>
       </select>
 

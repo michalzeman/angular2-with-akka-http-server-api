@@ -3,7 +3,7 @@ import {Router, ActivatedRoute}       from '@angular/router';
 import {BaseEntity} from "../entities/baseEntity";
 import {EntityService} from "../services/entity/base-entity.service";
 import {FormControlService} from "../templates/form-control.service";
-import {ControlGroup} from "@angular/common";
+import { FormGroup }                 from '@angular/forms';
 import {FormMetadata} from "../templates/form-metadata";
 import {Observable}     from 'rxjs/Rx';
 import {BaseDomainTemplate} from "../templates/baseDomain.template";
@@ -12,7 +12,7 @@ export abstract class BaseEntityComponent<E extends BaseEntity> implements OnIni
 
   model: E = undefined;
 
-  form: ControlGroup;
+  form: FormGroup;
 
   formMetadata: FormMetadata<any>[];
 

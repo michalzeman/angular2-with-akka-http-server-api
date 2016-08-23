@@ -1,4 +1,4 @@
-import { provideRouter, RouterConfig } from '@angular/router';
+import { Routes, RouterModule } from '@angular/router';
 
 import {Home} from './components/home/home';
 import {TestComponent} from "./domains/test/test.component";
@@ -6,7 +6,7 @@ import {ItemComponent} from "./domains/item/item.component";
 import {TestTableComponent} from "./domains/test/test-table.component";
 import {ItmeTableComponent} from "./domains/item/item-table.component";
 
-const routes: RouterConfig = [
+const routes: Routes = [
   { path: '', redirectTo: 'home', terminal: true },
   { path: 'home', component: Home },
   { path: 'test/:id', component: TestComponent},
@@ -17,6 +17,4 @@ const routes: RouterConfig = [
   { path: 'items', component: ItmeTableComponent},
 ];
 
-export const APP_ROUTER_PROVIDERS = [
-  provideRouter(routes)
-];
+export const APP_ROUTER_PROVIDERS:Routes = routes;

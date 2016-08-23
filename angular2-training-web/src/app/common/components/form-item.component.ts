@@ -1,5 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {ControlGroup}     from '@angular/common';
+import { FormGroup } from '@angular/forms';
 import {FormMetadata} from "../templates/form-metadata";
 
 @Component({
@@ -11,7 +11,7 @@ export class FormItemComponent implements OnInit {
 
   @Input() data: FormMetadata<any>;
 
-  @Input() form: ControlGroup;
+  @Input() form: FormGroup;
 
   constructor() {
 

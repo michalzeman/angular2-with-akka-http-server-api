@@ -1,5 +1,5 @@
 <div>
-  <form [ngFormModel]="form" (ngSubmit)="onSubmit()">
+  <form [formGroup]="form" (ngSubmit)="onSubmit()">
     <fieldset>
       <legend>{{title}}</legend>
       <div *ngFor="let metadata of formMetadata" class="form-row">

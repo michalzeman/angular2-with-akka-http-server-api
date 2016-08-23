@@ -3,14 +3,15 @@ import {
   BaseRequestOptions, Http, Response, ResponseOptions, Headers,
   ResponseType
 } from "@angular/http";
-import {inject, beforeEachProviders} from "@angular/core/testing";
+import {inject, addProviders} from "@angular/core/testing";
 import {MockBackend} from "@angular/http/testing";
 import {Test} from "./test";
 import {DelegateService} from "../../common/services/delegate.service";
 
 describe('TestCrudService', () => {
 
-  beforeEachProviders(() =>
+  beforeEach(() => {
+    addProviders(
       [
         BaseRequestOptions,
         MockBackend,
@@ -24,7 +25,7 @@ describe('TestCrudService', () => {
 
         TestService,
         DelegateService
-      ]);
+      ])});
 
   it('TestCrudService first test', inject([TestService, MockBackend], (testCrudService, mockBackend) => {
     let response = new Test();

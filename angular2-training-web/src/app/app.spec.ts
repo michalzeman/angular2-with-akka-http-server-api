@@ -1,6 +1,6 @@
 import {
-  inject,
-  it, addProviders
+  addProviders,
+  inject
 } from '@angular/core/testing';
 
 // Load the implementations that should be tested

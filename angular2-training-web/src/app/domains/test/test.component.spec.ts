@@ -1,4 +1,7 @@
-import {inject, it, addProviders } from '@angular/core/testing';
+import {
+  addProviders,
+  inject
+} from '@angular/core/testing';
 
 import {FormControlService} from "../../common/templates/form-control.service";
 import {TestService} from "./test.service";

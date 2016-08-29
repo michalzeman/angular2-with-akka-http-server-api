@@ -1,6 +1,6 @@
 package com.mz.training.domains.address
 
-import akka.actor.{ActorRef, Props}
+import akka.actor.{ActorContext, ActorRef, Props}
 import akka.pattern._
 import com.mz.training.common._
 import com.mz.training.common.services.AbstractDomainServiceActor
@@ -13,10 +13,10 @@ import scala.concurrent.Future
 /**
  * Created by zemi on 23. 10. 2015.
  */
-class AddressServiceActor(userRepProps: Props, addressRepProps: Props) extends AbstractDomainServiceActor[Address](addressRepProps)  {
+class AddressServiceActor(userRepBuilder: (ActorContext) => ActorRef, addressRepBuilder: (ActorContext) => ActorRef) extends AbstractDomainServiceActor[Address](addressRepBuilder)  {
 
 
-  val userRepository = context.actorOf(userRepProps)
+  val userRepository = userRepBuilder(context)
 
   override def receive: Receive = addressServiceReceive orElse super.receive
 
@@ -46,7 +46,9 @@ object AddressServiceActor {
   * @param addressRepProps
   * @return Props
   */
-  def props(userRepProps: Props, addressRepProps: Props): Props = Props(classOf[AddressServiceActor], userRepProps, addressRepProps)
+  def props(userRepProps: Props, addressRepProps: Props): Props = Props(classOf[AddressServiceActor],
+    (context: ActorContext) => context.actorOf(userRepProps),
+    (context: ActorContext) => context.actorOf(addressRepProps))
 
   /**
     * Create props

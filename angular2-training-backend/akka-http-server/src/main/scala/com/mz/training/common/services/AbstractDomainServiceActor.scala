@@ -1,6 +1,6 @@
 package com.mz.training.common.services
 
-import akka.actor.{Actor, ActorLogging, Props}
+import akka.actor.{Actor, ActorContext, ActorLogging, ActorRef, Props}
 import akka.pattern._
 import akka.util.Timeout
 import com.mz.training.common.messages.UnsupportedOperation
@@ -14,13 +14,13 @@ import scala.util.{Failure, Success}
 /**
   * Created by zemi on 12/06/16.
   */
-abstract class AbstractDomainServiceActor[E <: EntityId](repositoryProps: Props) extends Actor with ActorLogging {
+abstract class AbstractDomainServiceActor[E <: EntityId](repositoryBuilder:(ActorContext) => ActorRef) extends Actor with ActorLogging {
 
   import scala.concurrent.ExecutionContext.Implicits.global
 
   protected implicit val timeout: Timeout = 2000 milliseconds
 
-  val repository = context.actorOf(repositoryProps)
+  val repository = repositoryBuilder(context)
 
   override def receive: Receive = {
     case c:Create[E] => create(c.entity) pipeTo sender

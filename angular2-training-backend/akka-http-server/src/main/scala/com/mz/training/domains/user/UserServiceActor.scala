@@ -1,6 +1,6 @@
 package com.mz.training.domains.user
 
-import akka.actor.Props
+import akka.actor.{ActorContext, ActorRef, Props}
 import akka.pattern._
 import com.mz.training.common._
 import com.mz.training.common.services.AbstractDomainServiceActor
@@ -13,11 +13,11 @@ import scala.util.{Failure, Success}
 /**
   * Created by zemo on 18/10/15.
   */
-class UserServiceActor(userRepProps: Props, addressServiceProps: Props) extends AbstractDomainServiceActor[User](userRepProps) {
+class UserServiceActor(userRepBuilder: (ActorContext) => ActorRef, addressServiceBuilder: (ActorContext) => ActorRef) extends AbstractDomainServiceActor[User](userRepBuilder) {
 
   import UserServiceActor._
 
-  val addressService = context.actorOf(addressServiceProps)
+  val addressService = addressServiceBuilder(context)
 
   override def receive = userReceive orElse super.receive
 
@@ -60,5 +60,7 @@ object UserServiceActor {
     * @param addressServiceProps
     * @return Props
     */
-  def props(userRepProps: Props, addressServiceProps: Props): Props = Props(classOf[UserServiceActor], userRepProps, addressServiceProps)
+  def props(userRepProps: Props, addressServiceProps: Props): Props = Props(classOf[UserServiceActor],
+    (context: ActorContext) => context.actorOf(userRepProps),
+    (context: ActorContext) => context.actorOf(addressServiceProps))
 }

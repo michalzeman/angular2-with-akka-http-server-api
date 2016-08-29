@@ -1,8 +1,9 @@
 package com.mz.training.services
 
-import akka.actor.{ActorSystem, Props}
+import akka.actor.{ActorContext, ActorRef, ActorSystem, Props}
 import akka.testkit.{ImplicitSender, TestKit, TestProbe}
 import com.mz.training.common.jdbc.JDBCConnectionActor._
+import com.mz.training.common.repositories.{Insert, Inserted}
 import com.mz.training.common.services._
 import com.mz.training.domains.address.Address
 import com.mz.training.domains.address.AddressServiceActor.FindOrCreateAddress
@@ -10,7 +11,7 @@ import com.mz.training.domains.address.{AddressRepositoryActor, AddressServiceAc
 import com.mz.training.domains.user.UserRepositoryActor
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.{BeforeAndAfterAll, FunSuiteLike, Matchers}
-import org.scalautils.ConversionCheckedTripleEquals
+import org.scalautils.ConversionCheckedLegacyTripleEquals
 
 import scala.collection.mutable
 
@@ -21,9 +22,28 @@ class AddressServiceActorTest extends TestKit(ActorSystem("test-jdbc-demo-Addres
 with FunSuiteLike
 with BeforeAndAfterAll
 with Matchers
-with ConversionCheckedTripleEquals
+with ConversionCheckedLegacyTripleEquals
 with ImplicitSender
 with MockitoSugar {
+
+  test("0. Create address") {
+
+    def mockChild(contect: ActorSystem): ActorRef = {
+//      contect.actorOf(new TestProbe())
+      null
+    }
+
+    val userRepository = TestProbe()
+    val addressRepository = TestProbe()
+    val addressService = system.actorOf(Props(classOf[AddressServiceActor],
+      (context: ActorContext) => userRepository.ref,
+      (context: ActorContext) => addressRepository.ref))
+    //street: String, zip: String, houseNumber: String, city: String
+    addressService ! Create(Address(0, "StreetCreate", "zipCreate", "houseNumCreate", "CityCreate"))
+    addressRepository.expectMsgType[Insert[Address]]
+    addressRepository.reply(Inserted(999))
+    expectMsgAnyOf(Created(999))
+  }
 
   test("1. Create address") {
     val jdbcConA = TestProbe()
@@ -89,5 +109,4 @@ with MockitoSugar {
     val addresses = mutable.MutableList(Address(12, "Street_Find", "zip_Find", "houseNum_Find", "City_Find"))
     expectMsgAllOf(Found(addresses))
   }
-
-}
+ }

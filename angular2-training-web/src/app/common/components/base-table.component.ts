@@ -3,7 +3,7 @@ import {OnInit, OnDestroy} from "@angular/core";
 import {EntityService} from "../services/entity/base-entity.service";
 import {Router, ActivatedRoute}       from '@angular/router';
 import {BaseDomainTemplate} from "../templates/baseDomain.template";
-import {FormMetadata, DomainMetadata} from "../templates/form-metadata";
+import {DomainMetadata} from "../templates/form-metadata";
 
 export abstract class BaseTableComponent<E extends BaseEntity> implements OnInit, OnDestroy {
 

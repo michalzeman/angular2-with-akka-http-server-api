@@ -7,9 +7,7 @@ import {Router, ActivatedRoute} from "@angular/router";
 
 @Component({
   selector: 'test-table',
-  pipes: [],
   providers: [TestService, TestTemplate],
-  directives: [],
   templateUrl: '../../common/components/base-table.html',
 })
 export class TestTableComponent extends BaseTableComponent<Test> {

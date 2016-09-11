@@ -11,9 +11,7 @@ import {ItemTemplate} from "./item-template";
 
 @Component({
   selector: 'item',
-  pipes: [],
   providers: [ItemService, ItemTemplate],
-  directives: [FormItemComponent],
   templateUrl: '../../common/components/base-entity.html',
 })
 export class ItemComponent extends BaseEntityComponent<Item> {

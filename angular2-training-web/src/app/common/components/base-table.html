@@ -5,9 +5,9 @@
       <thead>
       <tr>
         <th *ngFor="let field of metadataArray">
-          <spam *ngIf="field.table">
+          <span *ngIf="field.table">
             {{field.label}}
-          </spam>
+          </span>
         </th>
         <th class="crud-column">
           <i class="glyphicon glyphicon-plus" (click)="addNew()"></i>

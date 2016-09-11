@@ -1,7 +1,6 @@
-import {Component} from '@angular/core';
-import Error = protractor.error.Error;
+import {Component, OnInit, OnDestroy} from '@angular/core';
+// import Error = protractor.error.Error;
 import {AlertMessage, ALERT_TYPE_INFO} from "./alert-message";
-import {OnDestroy, OnInit} from "@angular/core/esm";
 import {BroadcasterService} from "../../common/services/broadcaster.service";
 
 @Component({

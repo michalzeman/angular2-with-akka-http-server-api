@@ -9,9 +9,7 @@ import {Router} from "@angular/router";
 
 @Component({
   selector: 'item-table',
-  pipes: [],
   providers: [ItemService, ItemTemplate],
-  directives: [],
   templateUrl: '../../common/components/base-table.html',
 })
 export class ItmeTableComponent extends BaseTableComponent<Item> {

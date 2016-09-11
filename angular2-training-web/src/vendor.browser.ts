@@ -13,8 +13,7 @@ import '@angular/http';
 import '@angular/router';
 
 // AngularClass
-import '@angularclass/webpack-toolkit';
-import '@angularclass/request-idle-callback';
+import '@angularclass/hmr';
 
 // RxJS
 import 'rxjs/add/operator/map';
@@ -22,7 +21,7 @@ import 'rxjs/add/operator/mergeMap';
 
 // for Bootstrap 3
 import 'jquery';
-import 'bootstrap-loader'
+import 'bootstrap-loader';
 
 if ('production' === ENV) {
   // Production

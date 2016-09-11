@@ -10,9 +10,7 @@ import {TestTemplate} from "./test-template";
 
 @Component({
   selector: 'test',
-  pipes: [],
   providers: [TestService, TestTemplate],
-  directives: [FormItemComponent],
   templateUrl: '../../common/components/base-entity.html',
 })
 export class TestComponent extends BaseEntityComponent<Test> {

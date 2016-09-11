@@ -8,11 +8,6 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpModule } from '@angular/http';
 import { RouterModule } from '@angular/router';
 
-/*
- * Platform and Environment providers/directives/pipes
- */
-// import { PLATFORM_PROVIDERS } from '../platform/browser';
-// import { ENV_PROVIDERS } from '../platform/environment';
 import { APP_ROUTER_PROVIDERS} from './app.routes';
 
 
@@ -26,10 +21,14 @@ import {Home} from "./components/home/home";
 import {TestComponent} from "./domains/test/test.component";
 import {ItemComponent} from "./domains/item/item.component";
 import {TestTableComponent} from "./domains/test/test-table.component";
+import {MenuComponent} from "./menu.component";
+import {AlertComponent} from "./domains/alert/alert.component";
+import {FormItemComponent} from "./common/components/form-item.component";
 
 @NgModule({
   bootstrap:    [App],
-  declarations: [App, Home, TestComponent, TestTableComponent, ItemComponent, ItmeTableComponent],
+  declarations: [App, Home, TestComponent, TestTableComponent, ItemComponent,
+    ItmeTableComponent, MenuComponent, AlertComponent, FormItemComponent],
   imports:      [BrowserModule, FormsModule, ReactiveFormsModule, HttpModule, RouterModule.forRoot(APP_ROUTER_PROVIDERS)],
   providers:    [DelegateService, BroadcasterService, BroadcastEmmitterService, FormControlService],
 })

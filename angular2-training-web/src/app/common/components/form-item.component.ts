@@ -5,7 +5,6 @@ import {FormMetadata} from "../templates/form-metadata";
 @Component({
   selector: 'form-item',
   templateUrl: './form-item.html',
-  directives: []
 })
 export class FormItemComponent implements OnInit {
 

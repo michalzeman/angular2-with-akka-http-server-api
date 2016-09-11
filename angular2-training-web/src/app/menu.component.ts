@@ -1,12 +1,9 @@
-import {Component} from '@angular/core';
-import {ROUTER_DIRECTIVES} from "@angular/router";
+import {Component, ViewEncapsulation} from '@angular/core';
 
 
 @Component({
   selector: 'menu',
-  pipes: [],
-  providers: [],
-  directives: [ROUTER_DIRECTIVES],
+  encapsulation: ViewEncapsulation.None,
   templateUrl: './menu.component.html',
 })
 export class MenuComponent {

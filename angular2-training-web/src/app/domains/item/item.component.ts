@@ -1,5 +1,4 @@
 import {Component} from '@angular/core';
-import {FormItemComponent} from "../../common/components/form-item.component";
 import {BaseEntityComponent} from "../../common/components/base-entity.component";
 import {Item} from "./Item";
 import {FormMetadata} from "../../common/templates/form-metadata";
@@ -23,7 +22,6 @@ export class ItemComponent extends BaseEntityComponent<Item> {
 
   mapDomainFormMetadata(entity: Item): FormMetadata<any>[] {
     return [
-      // FormMetadata.getInstance<number>('id', 'textbox', false, 'Id', false, entity),
       FormMetadata.getInstance<string>('name', 'textbox', true, 'Name', true, entity),
       FormMetadata.getInstance<string>('description', 'textbox', true, 'Description', true, entity),
     ];

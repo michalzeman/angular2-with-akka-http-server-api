@@ -1,7 +1,7 @@
 import {BaseDomainTemplate} from "../../common/templates/baseDomain.template";
 import {Item} from "./Item";
 import {Injectable} from "@angular/core";
-import {DomainMetadata} from "../../common/templates/form-metadata";
+import {DomainMetadata, FormMetadata} from "../../common/templates/form-metadata";
 
 @Injectable()
 export class ItemTemplate extends BaseDomainTemplate<Item> {
@@ -12,9 +12,15 @@ export class ItemTemplate extends BaseDomainTemplate<Item> {
 
   protected initMetadataArray(): DomainMetadata[] {
     return [
-      // new DomainMetadata({key:'id', controlType:'textbox', table:false, label:'Id', required:false}),
       new DomainMetadata({key:'name', controlType:'textbox', table:true, label:'Name', required:true}),
       new DomainMetadata({key:'description', controlType:'textbox', table:true, label:'Description', required:true}),
+    ];
+  }
+
+  mapDomainFormMetadata(entity: Item): FormMetadata<any>[] {
+    return [
+      FormMetadata.getInstance<string>('name', 'textbox', true, 'Name', true, entity),
+      FormMetadata.getInstance<string>('description', 'textbox', true, 'Description', true, entity),
     ];
   }
 

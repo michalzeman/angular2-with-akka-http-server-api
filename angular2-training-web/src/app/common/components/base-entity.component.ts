@@ -66,7 +66,9 @@ export abstract class BaseEntityComponent<E extends BaseEntity> implements OnIni
    * map Domain object to form metadata array
    * @param entity
    */
-  abstract mapDomainFormMetadata(entity: E): FormMetadata<any>[];
+  mapDomainFormMetadata(entity: E): FormMetadata<any>[] {
+    return this.domainTemplate.mapDomainFormMetadata(entity);
+  }
 
   get(id: number) {
     console.debug('get() ->');

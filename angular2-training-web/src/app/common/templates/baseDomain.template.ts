@@ -1,4 +1,4 @@
-import {DomainMetadata} from "./form-metadata";
+import {DomainMetadata, FormMetadata} from "./form-metadata";
 import {BaseEntity} from "../entities/baseEntity";
 
 export abstract class BaseDomainTemplate<E extends BaseEntity> {
@@ -10,6 +10,8 @@ export abstract class BaseDomainTemplate<E extends BaseEntity> {
   }
 
   protected abstract initMetadataArray(): DomainMetadata[];
+
+  abstract mapDomainFormMetadata(entity: E): FormMetadata<any>[];
 
   abstract getDetailUrl():string;
 

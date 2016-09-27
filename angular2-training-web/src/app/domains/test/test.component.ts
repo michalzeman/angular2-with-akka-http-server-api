@@ -27,12 +27,5 @@ export class TestComponent extends BaseEntityComponent<Test> {
     super(entityService, formControlService, route, router, testTemplate);
   }
 
-  mapDomainFormMetadata(entity:Test):FormMetadata<any>[] {
-    let item = new FormMetadata<number>(
-      new DomainMetadata({key: 'id', controlType: 'textbox', table: false, label: 'Id', required: true}), entity);
-    return [item];
-  }
-
-
 }
 

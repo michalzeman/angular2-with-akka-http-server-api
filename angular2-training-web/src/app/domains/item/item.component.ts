@@ -20,13 +20,6 @@ export class ItemComponent extends BaseEntityComponent<Item> {
     super(entityService, formControlService, route, router, itemTemplate);
   }
 
-  mapDomainFormMetadata(entity: Item): FormMetadata<any>[] {
-    return [
-      FormMetadata.getInstance<string>('name', 'textbox', true, 'Name', true, entity),
-      FormMetadata.getInstance<string>('description', 'textbox', true, 'Description', true, entity),
-    ];
-  }
-
   protected getTitle(): string {
     return 'Item';
   }

@@ -24,4 +24,10 @@ package object repositories {
 
   case class Insert[E <: EntityId](entity: E) extends Message
 
+  case class SelectByIdList(ids: List[Long]) extends Message
+
+  case class SelectCount() extends Message
+
+  case class SelectPaging(offset: Int, itemsPerPage: Int)
+
 }

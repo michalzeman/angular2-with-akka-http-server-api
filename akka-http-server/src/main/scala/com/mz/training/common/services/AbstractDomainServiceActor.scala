@@ -1,10 +1,13 @@
 package com.mz.training.common.services
 
-import akka.actor.{Actor, ActorContext, ActorLogging, ActorRef, Props}
+import java.util.UUID
+
+import akka.actor.{Actor, ActorContext, ActorLogging, ActorRef, PoisonPill, Props}
 import akka.pattern._
 import akka.util.Timeout
 import com.mz.training.common.messages.UnsupportedOperation
 import com.mz.training.common._
+import com.mz.training.common.services.pagination.GetAllPaginationActor
 import com.mz.training.domains.EntityId
 
 import scala.concurrent.duration._
@@ -14,7 +17,8 @@ import scala.util.{Failure, Success}
 /**
   * Created by zemi on 12/06/16.
   */
-abstract class AbstractDomainServiceActor[E <: EntityId](repositoryBuilder:(ActorContext) => ActorRef) extends Actor with ActorLogging {
+abstract class AbstractDomainServiceActor[E <: EntityId](repositoryBuilder:(ActorContext) => ActorRef)
+  extends Actor with ActorLogging {
 
   import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -28,6 +32,7 @@ abstract class AbstractDomainServiceActor[E <: EntityId](repositoryBuilder:(Acto
     case d:Delete[E] => delete(d.entity) pipeTo sender
     case DeleteById(id) => delete(id) pipeTo sender
     case u:Update[E]  => update(u.entity) pipeTo sender
+    case msg:GetAllPagination[E]  => getAllPagination(msg) pipeTo sender
     case GetAll => getAll pipeTo sender
     case _ => sender ! UnsupportedOperation
   }
@@ -43,6 +48,21 @@ abstract class AbstractDomainServiceActor[E <: EntityId](repositoryBuilder:(Acto
       log.info("findUserById - success!")
       Found(result)
     })
+  }
+
+  /**
+    * List all entities from DB pagination
+    * TODO: add pagination
+    * @return
+    */
+  protected def getAllPagination(msg:GetAllPagination[E]): Future[GetAllPaginationResult[E]] = {
+    log.info(s"${getClass.getCanonicalName} getAllPagination ->")
+    val actRef = Future {
+      context.actorOf(GetAllPaginationActor.props[E](repository),
+        s"GetAllPaginationActor-${UUID.randomUUID.toString}")
+    }
+    actRef.flatMap(getAllPagActRef => executeAndCleanUpAct(getAllPagActRef ? msg)(getAllPagActRef)
+      .mapTo[GetAllPaginationResult[E]])
   }
 
   /**
@@ -115,6 +135,34 @@ abstract class AbstractDomainServiceActor[E <: EntityId](repositoryBuilder:(Acto
       if (result) Updated(entity)
       else NotUpdated(entity)
     })
+  }
+
+  /**
+    * execute action and clean up actor
+    * @param execute - execution function
+    * @param actor - actor to terminate after execution
+    * @tparam R - Type of result
+    * @return Future of execution
+    */
+  protected def executeAndCleanUpAct[R](execute: => Future[R])(actor: ActorRef): Future[R] = {
+    execute.andThen {
+      case Success(s) => {
+        destroyActors(Some(actor))
+        s
+      }
+      case Failure(e) => {
+        destroyActors(Some(actor))
+        e
+      }
+    }
+  }
+
+  /**
+    * send message PoinsonPill to the actor
+    * @param actor - ActorRef to be terminated
+    */
+  def destroyActors(actor: Option[ActorRef]): Unit = {
+    actor.foreach(actor => actor ! PoisonPill)
   }
 
   @throws[Exception](classOf[Exception])

@@ -1,6 +1,8 @@
 package com.mz.training.common
 
 import com.mz.training.domains.EntityId
+import spray.json.DefaultJsonProtocol._
+import spray.json.JsonFormat
 
 
 /**
@@ -23,6 +25,14 @@ package object services {
   case class Deleted()
 
   case class GetAll[E <: EntityId]()
+
+  case class GetAllPagination[E <: EntityId](page:Int, sizePerPage:Int)
+
+  case class GetAllPaginationResult[E](page:Int, sizePerPage:Int, size:Long, result: List[E])
+
+  object GetAllPaginationResult {
+    implicit def format[E :JsonFormat] = jsonFormat4(GetAllPaginationResult.apply[E])
+  }
 
   case class Update[E <: EntityId](entity: E)
 

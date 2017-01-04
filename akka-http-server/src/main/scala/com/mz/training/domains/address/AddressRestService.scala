@@ -1,10 +1,9 @@
 package com.mz.training.domains.address
 
 import akka.actor.{ActorRef, ActorSystem}
-import akka.http.scaladsl.server.Directives._
-import akka.http.scaladsl.server.Route
 import com.mz.training.common.jdbc.JDBCConnectionActor
 import com.mz.training.common.rest.AbstractRestService
+import spray.json.RootJsonFormat
 
 import scala.concurrent.Future
 
@@ -21,34 +20,7 @@ class AddressRestService(implicit system: ActorSystem) extends AbstractRestServi
     }
   }
 
-  val routes =
-    path(getUriPath) {
-      get {
-        complete(getAll)
-      }
-    } ~
-      path(getUriPath / IntNumber) { id =>
-        get {
-          complete(getById(id))
-        }
-      } ~
-      path(getUriPath / IntNumber) { id =>
-        put {
-          entity(as[Address]) { entity => complete(update(entity)) }
-        }
-      } ~
-      path(getUriPath / LongNumber) { id =>
-        delete {
-          complete(deleteById(id))
-        }
-      } ~
-      path(getUriPath) {
-        post {
-          entity(as[Address]) { entity => complete(create(entity)) }
-        }
-      }
-
   override def getUriPath: String = "addresses"
 
-  override def buildRoute(): Route = routes
+  override protected def getFormat: RootJsonFormat[Address] = Address.format
 }

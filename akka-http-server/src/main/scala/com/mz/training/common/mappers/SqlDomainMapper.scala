@@ -33,6 +33,17 @@ trait SqlDomainMapper[E <: EntityId] {
   }
 
   /**
+    * Map count
+    * @param resultSet
+    * @return Option[Long]
+    */
+  def mapCount(resultSet: ResultSet): Option[Long] = {
+    if (resultSet.next()) {
+      Some(resultSet.getLong(1))
+    } else None
+  }
+
+  /**
    * Map ResultSet to list
    * @param resultSet
    * @return List[E]

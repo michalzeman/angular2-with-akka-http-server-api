@@ -3,7 +3,7 @@ package com.mz.training.services
 import akka.actor.{ActorContext, ActorRef, ActorSystem, Props}
 import akka.testkit.{ImplicitSender, TestKit, TestProbe}
 import com.mz.training.common.jdbc.JDBCConnectionActor._
-import com.mz.training.common.repositories.{Insert, Inserted}
+import com.mz.training.common.repositories.{Insert, Inserted, SelectCount, SelectPaging}
 import com.mz.training.common.services._
 import com.mz.training.domains.address.Address
 import com.mz.training.domains.address.AddressServiceActor.FindOrCreateAddress
@@ -104,5 +104,22 @@ with ImplicitSender {
     jdbcConA.reply(JdbcSelectResult(Some(address)))
     val addresses = mutable.MutableList(Address(12, "Street_Find", "zip_Find", "houseNum_Find", "City_Find"))
     expectMsgAllOf(Found(addresses))
+  }
+
+  test("6. Pagination ") {
+    val userRepository = TestProbe()
+    val addressRepository = TestProbe()
+    val addressService = system.actorOf(Props(classOf[AddressServiceActor],
+      (context: ActorContext) => userRepository.ref,
+      (context: ActorContext) => addressRepository.ref))
+
+    addressService ! GetAllPagination[Address](2, 2)
+
+    addressRepository.expectMsgType[SelectCount]
+    addressRepository.reply(Some[Long](12234l))
+    addressRepository.expectMsgType[SelectPaging]
+    addressRepository.reply(List(Address(12, "Street_Find", "zip_Find", "houseNum_Find", "City_Find")))
+
+    expectMsgType[GetAllPaginationResult[Address]]
   }
  }

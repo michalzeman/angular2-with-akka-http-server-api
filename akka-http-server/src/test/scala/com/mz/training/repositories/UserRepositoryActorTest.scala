@@ -65,9 +65,90 @@ class UserRepositoryActorTest extends AbstractRepositoryActorTest {
     (resultList.size > 0) shouldBe true
   }
 
+  test("Select count") {
+    val userRepository = system.actorOf(UserRepositoryActor.props(jdbcConActor))
+    val addressRepository = system.actorOf(AddressRepositoryActor.props(jdbcConActor))
+    addressRepository ! Insert(Address(0, "test", "82109", "9A", "testCity"))
+    val addrIdRes:Inserted = expectMsgType[Inserted]
+
+    val user = User(0, "test", "Test 2", Option(addrIdRes.id), None)
+    userRepository ! Insert(user)
+    val result: Inserted = expectMsgType[Inserted]
+
+    val user3 = User(0, "test_3", "Test 3", Option(addrIdRes.id), None)
+    userRepository ! Insert(user3)
+    val result3: Inserted = expectMsgType[Inserted]
+
+    val user4 = User(0, "test_4", "Test 4", Option(addrIdRes.id), None)
+    userRepository ! Insert(user4)
+    val result4: Inserted = expectMsgType[Inserted]
+
+    userRepository ! SelectCount()
+    val resultCount = expectMsgType[Some[Long]]
+    println(s"Count of users is ${resultCount.value}")
+  }
+
+  test("Select by ids list") {
+    val userRepository = system.actorOf(UserRepositoryActor.props(jdbcConActor))
+    val addressRepository = system.actorOf(AddressRepositoryActor.props(jdbcConActor))
+
+    var idsList = List[Long]()
+
+    addressRepository ! Insert(Address(0, "test", "82109", "9A", "testCity"))
+    val addrIdRes:Inserted = expectMsgType[Inserted]
+
+    val user = User(0, "test", "Test 2", Option(addrIdRes.id), None)
+    userRepository ! Insert(user)
+    val result: Inserted = expectMsgType[Inserted]
+    idsList = result.id::idsList
+
+    val user3 = User(0, "test_3", "Test 3", Option(addrIdRes.id), None)
+    userRepository ! Insert(user3)
+    val result3: Inserted = expectMsgType[Inserted]
+    idsList = result3.id::idsList
+
+    val user4 = User(0, "test_4", "Test 4", Option(addrIdRes.id), None)
+    userRepository ! Insert(user4)
+    val result4: Inserted = expectMsgType[Inserted]
+    idsList = result4.id::idsList
+
+    userRepository ! SelectByIdList(idsList)
+    val resultUser = expectMsgType[Seq[User]]
+    (resultUser.size == 3) shouldBe true
+  }
+
+  test("Select pagination") {
+    val userRepository = system.actorOf(UserRepositoryActor.props(jdbcConActor))
+    val addressRepository = system.actorOf(AddressRepositoryActor.props(jdbcConActor))
+
+    var idsList = List[Long]()
+
+    addressRepository ! Insert(Address(0, "test", "82109", "9A", "testCity"))
+    val addrIdRes:Inserted = expectMsgType[Inserted]
+
+    val user = User(0, "test", "Test 2", Option(addrIdRes.id), None)
+    userRepository ! Insert(user)
+    val result: Inserted = expectMsgType[Inserted]
+    idsList = result.id::idsList
+
+    val user3 = User(0, "test_3", "Test 3", Option(addrIdRes.id), None)
+    userRepository ! Insert(user3)
+    val result3: Inserted = expectMsgType[Inserted]
+    idsList = result3.id::idsList
+
+    val user4 = User(0, "test_4", "Test 4", Option(addrIdRes.id), None)
+    userRepository ! Insert(user4)
+    val result4: Inserted = expectMsgType[Inserted]
+    idsList = result4.id::idsList
+
+    userRepository ! SelectPaging(1, -2)
+    val resultUser = expectMsgType[Seq[User]]
+    (resultUser.size == 2) shouldBe true
+  }
+
   override protected def afterAll(): Unit = {
     jdbcConActor ! Rollback
-    system.shutdown()
+    system.terminate
   }
 
 }

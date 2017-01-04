@@ -1,5 +1,7 @@
 package com.mz.training
 
+import spray.json.JsonFormat
+
 /**
  * Created by zemi on 8. 10. 2015.
  */

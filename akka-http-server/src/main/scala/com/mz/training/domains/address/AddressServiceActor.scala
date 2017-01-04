@@ -13,7 +13,8 @@ import scala.concurrent.Future
 /**
  * Created by zemi on 23. 10. 2015.
  */
-class AddressServiceActor(userRepBuilder: (ActorContext) => ActorRef, addressRepBuilder: (ActorContext) => ActorRef) extends AbstractDomainServiceActor[Address](addressRepBuilder)  {
+class AddressServiceActor(userRepBuilder: (ActorContext) => ActorRef, addressRepBuilder: (ActorContext) => ActorRef)
+  extends AbstractDomainServiceActor[Address](addressRepBuilder)  {
 
 
   val userRepository = userRepBuilder(context)

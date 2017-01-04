@@ -1,10 +1,9 @@
 package com.mz.training.domains.item
 
 import akka.actor.{ActorRef, ActorSystem}
-import akka.http.scaladsl.server.Directives._
-import akka.http.scaladsl.server.Route
 import com.mz.training.common.jdbc.JDBCConnectionActor
 import com.mz.training.common.rest.AbstractRestService
+import spray.json.RootJsonFormat
 
 import scala.concurrent.Future
 
@@ -23,32 +22,5 @@ class ItemRestService(implicit system: ActorSystem) extends AbstractRestService[
 
   override def getUriPath: String = "items"
 
-  val routes =
-    path(getUriPath) {
-      get {
-        complete(getAll)
-      }
-    } ~
-      path(getUriPath / IntNumber) { id =>
-        get {
-          complete(getById(id))
-        }
-      } ~
-      path(getUriPath / IntNumber) { id =>
-        put {
-          entity(as[Item]) { item => complete(update(item)) }
-        }
-      } ~
-      path(getUriPath / LongNumber) { id =>
-        delete {
-          complete(deleteById(id))
-        }
-      } ~
-      path(getUriPath) {
-        post {
-          entity(as[Item]) { item => complete(create(item)) }
-        }
-      }
-
-  override def buildRoute(): Route = routes
+  override protected def getFormat: RootJsonFormat[Item] = Item.format
 }

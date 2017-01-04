@@ -109,17 +109,28 @@ abstract class AbstractRestService[E <: EntityId](implicit system: ActorSystem) 
   protected def getAll: Route = {
     path(getUriPath) {
       get {
-        complete {
-          getServiceActor.flatMap(actors => completeAndCleanUpAct({
-          (actors._1 ? GetAll).mapTo[Found[E]].map(result => result.results)
-        })(actors))}
-      }
-      parameters('page, 'items) {
-        (page, items) => {
-          complete {
-            getServiceActor.flatMap(actors => completeAndCleanUpAct {
-              (actors._1 ? GetAllPagination[E](Integer.valueOf(page), Integer.valueOf(items))).mapTo[GetAllPaginationResult[E]]
-            }(actors))
+        parameters('page.?, 'items.?) {
+          (page, items) => {
+            complete {
+              if (page.isDefined || items.isDefined) {
+                val pageVal = page match {
+                  case Some(value) => value
+                  case None => "1"
+                }
+                val itemsVal = items match {
+                  case Some(value) => value
+                  case None => "10"
+                }
+                getServiceActor.flatMap(actors => completeAndCleanUpAct {
+                  (actors._1 ? GetAllPagination[E](Integer.valueOf(pageVal), Integer.valueOf(itemsVal))).mapTo[GetAllPaginationResult[E]]
+                }(actors))
+              }
+              else {
+                getServiceActor.flatMap(actors => completeAndCleanUpAct({
+                  (actors._1 ? GetAll).mapTo[Found[E]].map(result => result.results)
+                })(actors))
+              }
+            }
           }
         }
       }

@@ -14,7 +14,7 @@ import akka.http.scaladsl.marshalling.Marshal
   */
 trait RestEndpointRoute extends CorsSupport with DefaultJsonProtocol with SprayJsonSupport{
 
-  def buildRoute(): Route;
+  def buildRoute(): Route
 
   val myExceptionHandler = ExceptionHandler {
     case exc: Exception =>

@@ -141,7 +141,7 @@ class UserRepositoryActorTest extends AbstractRepositoryActorTest {
     val result4: Inserted = expectMsgType[Inserted]
     idsList = result4.id::idsList
 
-    userRepository ! SelectPaging(1, -2)
+    userRepository ! SelectPaging(1, 2)
     val resultUser = expectMsgType[Seq[User]]
     (resultUser.size == 2) shouldBe true
   }

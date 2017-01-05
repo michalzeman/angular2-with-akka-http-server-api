@@ -24,11 +24,13 @@ import {TestTableComponent} from "./domains/test/test-table.component";
 import {MenuComponent} from "./menu.component";
 import {AlertComponent} from "./domains/alert/alert.component";
 import {FormItemComponent} from "./common/components/form-item.component";
+import {AddressComponent} from "./domains/address/address.component";
+import {AddressTableComponent} from "./domains/address/address-table.component";
 
 @NgModule({
   bootstrap:    [App],
   declarations: [App, Home, TestComponent, TestTableComponent, ItemComponent,
-    ItmeTableComponent, MenuComponent, AlertComponent, FormItemComponent],
+    ItmeTableComponent, MenuComponent, AlertComponent, FormItemComponent, AddressComponent, AddressTableComponent],
   imports:      [BrowserModule, FormsModule, ReactiveFormsModule, HttpModule, RouterModule.forRoot(APP_ROUTER_PROVIDERS)],
   providers:    [DelegateService, BroadcasterService, BroadcastEmmitterService, FormControlService],
 })

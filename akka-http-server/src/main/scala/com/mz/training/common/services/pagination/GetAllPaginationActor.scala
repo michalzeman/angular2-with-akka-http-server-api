@@ -5,18 +5,23 @@ import com.mz.training.common.repositories.{SelectCount, SelectPaging}
 import com.mz.training.common.services.{GetAllPagination, GetAllPaginationResult}
 import com.mz.training.domains.EntityId
 
+import scala.concurrent.duration._
+
+
+case object TimeOutMsg
+
 /**
   * Created by zemi on 28/12/2016.
   */
 class GetAllPaginationActor[E <: EntityId](repository: ActorRef) extends Actor with ActorLogging {
 
+  protected implicit val executorService = context.dispatcher
+
+  val timeout = 1.7 seconds
+
   var senderAct: Option[ActorRef] = None
 
   var msg: Option[GetAllPagination[E]] = None
-
-  var offset: Option[Int] = None
-
-  var itemsPerPage: Option[Int] = None
 
   var size: Option[Long] = None
 
@@ -26,6 +31,26 @@ class GetAllPaginationActor[E <: EntityId](repository: ActorRef) extends Actor w
     case msg: GetAllPagination[E] => startProcess(msg)
     case msg: List[E] => processSelectResult(msg)
     case msg: Option[Long] => processCount(msg)
+    case TimeOutMsg => {
+      log.warning(s"${getClass.getCanonicalName} -> Timeout reached!")
+      size = Some(0)
+      result = List()
+      msg.foreach(msg =>
+        senderAct.foreach(actor => {
+          log.debug(s"${getClass.getCanonicalName} -> processResult going to return result")
+          actor ! GetAllPaginationResult[E](msg.page, msg.sizePerPage, 0, result)
+        }))
+      context.become(processed)
+    }
+    case _: Any => log.error("Unsupported operation!!!")
+  }
+
+  /**
+    * GetAllPagination is in the processed state
+    *
+    * @return
+    */
+  def processed: Receive = {
     case _: Any => log.error("Unsupported operation!!!")
   }
 
@@ -37,7 +62,7 @@ class GetAllPaginationActor[E <: EntityId](repository: ActorRef) extends Actor w
   private def processSelectResult(msg: List[E]): Unit = {
     log.info(s"${getClass.getCanonicalName}:processResult(msg) ->")
     result = msg
-    processResult
+    processResult(result, size)
   }
 
   /**
@@ -51,7 +76,7 @@ class GetAllPaginationActor[E <: EntityId](repository: ActorRef) extends Actor w
       case s: Some[Long] => size = s
       case None => size = Some(0)
     }
-    processResult
+    processResult(result, size)
   }
 
   /**
@@ -62,20 +87,24 @@ class GetAllPaginationActor[E <: EntityId](repository: ActorRef) extends Actor w
   private def startProcess(msg: GetAllPagination[E]): Unit = {
     senderAct = Some(sender)
     this.msg = Some(msg)
-    offset = if (msg.page > 0) Some((msg.page - 1) * getSizeParPage(msg.sizePerPage)) else Some(0)
-    itemsPerPage = Some(getSizeParPage(msg.sizePerPage))
+    val offset = if (msg.page > 0) (msg.page - 1) * getSizeParPage(msg.sizePerPage) else 0
+    val itemsPerPage = getSizeParPage(msg.sizePerPage)
     repository ! SelectCount()
-    repository ! SelectPaging(offset.get, itemsPerPage.get)
+    repository ! SelectPaging(offset, itemsPerPage)
+    context.system.scheduler.scheduleOnce(timeout, self, TimeOutMsg)
   }
 
   /**
     * process result if all params are collected, result is sent back to the sender actor
     */
-  private def processResult: Unit = {
-    result match {
-      case Nil => Unit
-      case list:List[E] => size.foreach(sz => msg.foreach(msg =>
-        senderAct.foreach(actor => actor ! GetAllPaginationResult[E](msg.page, itemsPerPage.get, sz, list))
+  private def processResult(result: List[E], size: Option[Long]): Unit = {
+    if (result.nonEmpty) {
+      size.foreach(sz => msg.foreach(msg =>
+        senderAct.foreach(actor => {
+          log.debug(s"${getClass.getCanonicalName} -> processResult going to return result")
+          actor ! GetAllPaginationResult[E](msg.page, msg.sizePerPage, sz, result)
+          context.become(processed)
+        })
       ))
     }
   }

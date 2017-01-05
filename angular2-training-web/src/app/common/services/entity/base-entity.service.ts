@@ -1,9 +1,10 @@
-import {Http, URLSearchParams, Response} from '@angular/http';
+import {Http, URLSearchParams, Response, RequestOptions} from '@angular/http';
 import '../../../rxjs-operators';
 import {BaseEntity} from '../../entities/baseEntity';
 import {DelegateService} from "../delegate.service";
 import {Observable}     from 'rxjs/Rx';
 import {AlertMessage, ALERT_TYPE_DANGER} from "../../../domains/alert/alert-message";
+import {GetAllPationation} from "../../entities/get-all.pagination";
 
 export interface ErrorResponse {
   data:string,
@@ -35,6 +36,13 @@ export interface EntityService<E extends BaseEntity> {
    * get all
    */
   getAll():Observable<E[]>;
+
+  /**
+   * Get all by paging
+   * @param page - current page
+   * @param items - items per page
+   */
+  getAllPagination(page:number, items:number):Observable<GetAllPationation<E>>;
 
   /**
    * save entity
@@ -73,6 +81,7 @@ export abstract class BaseEntityServiceImpl<E extends BaseEntity> implements Ent
 
     console.error(error); // log to console instead
     let statusCode = error.status.valueOf();
+    let status = error.status;
     switch (statusCode) {
       case -1:
         this.delegateService.emitAlert(new AlertMessage('System error', ALERT_TYPE_DANGER));
@@ -89,26 +98,43 @@ export abstract class BaseEntityServiceImpl<E extends BaseEntity> implements Ent
     console.debug('get ->');
     //noinspection TypeScriptValidateTypes
     return this.http.get(this.url +'/'+id)
-      .map(response => this.extractData(response)).catch(error => this.handleError(error));
+      .map(response => this.extractData(response))
+      .catch(error => this.handleError(error));
   }
 
   delete(entity:E):Observable<{}> {
     console.debug('delete -> ', entity);
     return this.http.delete(this.url + '/' + entity.id.toString())
-      .map(response => this.extractData(response)).catch(error => this.handleError(error));
+      .map(response => this.extractData(response))
+      .catch(error => this.handleError(error));
   }
 
   update(entity:E):Observable<E> {
     console.debug('update -> ', entity);
     //noinspection TypeScriptValidateTypes
     return this.http.put(this.url.concat('/').concat(entity.id.toString()), entity)
-      .map(response => this.extractData(response)).catch(error => this.handleError(error));
+      .map(response => this.extractData(response))
+      .catch(error => this.handleError(error));
   }
 
   getAll():Observable<E[]> {
     console.debug('getAll ->');
     return this.http.get(this.url)
-      .map(this.extractData).catch(error => this.handleError(error));
+      .map(this.extractData)
+      .catch(error => this.handleError(error));
+  }
+
+  getAllPagination(page:number, items:number):Observable<GetAllPationation<E>> {
+    console.debug('getAllPagination ->');
+    let params = new URLSearchParams();
+    params.set('page', page.toString());
+    params.set('items', items.toString());
+    let options = new RequestOptions({
+      search: params
+    });
+    return this.http.get(this.url, options)
+      .map(this.extractData)
+      .catch(error => this.handleError(error));
   }
 
   save(entity:E):Observable<E> {
@@ -116,7 +142,8 @@ export abstract class BaseEntityServiceImpl<E extends BaseEntity> implements Ent
     //noinspection TypeScriptValidateTypes
     entity.id = -1; // workaround for backed !!! there must be defined id!
     return this.http.post(this.url, entity)
-      .map(response => this.extractData(response)).catch(error => this.handleError(error));
+      .map(response => this.extractData(response))
+      .catch(error => this.handleError(error));
   }
 
 }

@@ -121,20 +121,28 @@ abstract class AbstractRestService[E <: EntityId](implicit system: ActorSystem) 
                   case Some(value) => value
                   case None => "10"
                 }
-                getServiceActor.flatMap(actors => completeAndCleanUpAct {
-                  (actors._1 ? GetAllPagination[E](Integer.valueOf(pageVal), Integer.valueOf(itemsVal))).mapTo[GetAllPaginationResult[E]]
-                }(actors))
+                getAllPagination(pageVal, itemsVal)
               }
               else {
-                getServiceActor.flatMap(actors => completeAndCleanUpAct({
-                  (actors._1 ? GetAll).mapTo[Found[E]].map(result => result.results)
-                })(actors))
+                getAllList
               }
             }
           }
         }
       }
     }
+  }
+
+  private def getAllPagination(pageVal: String, itemsVal: String):Future[GetAllPaginationResult[E]] = {
+    getServiceActor.flatMap(actors => completeAndCleanUpAct {
+      (actors._1 ? GetAllPagination[E](Integer.valueOf(pageVal), Integer.valueOf(itemsVal))).mapTo[GetAllPaginationResult[E]]
+    }(actors))
+  }
+
+  protected def getAllList:Future[Seq[E]] = {
+    getServiceActor.flatMap(actors => completeAndCleanUpAct({
+      (actors._1 ? GetAll).mapTo[Found[E]].map(result => result.results)
+    })(actors))
   }
 
   /**

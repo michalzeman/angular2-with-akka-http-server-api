@@ -15,10 +15,6 @@ import {TestTemplate} from "./test-template";
 })
 export class TestComponent extends BaseEntityComponent<Test> {
 
-  protected getTitle(): string {
-    return 'Test';
-  }
-
   constructor(entityService:TestService,
               formControlService:FormControlService,
               route:ActivatedRoute,

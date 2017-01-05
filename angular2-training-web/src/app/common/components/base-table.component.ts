@@ -5,11 +5,25 @@ import {Router, ActivatedRoute}       from '@angular/router';
 import {BaseDomainTemplate} from "../templates/baseDomain.template";
 import {DomainMetadata} from "../templates/form-metadata";
 
+const PAGE_QUERY_PARAM = "page";
+
 export abstract class BaseTableComponent<E extends BaseEntity> implements OnInit, OnDestroy {
+
+  public itemsPerPage: number;
+
+  public page: number;
+
+  public total: number;
 
   public data:E[];
 
+  public urlTable: string;
+
+  public paginationArray: number[];
+
   public metadataArray: DomainMetadata[];
+
+  protected sub: any;
 
   constructor(protected crudService:EntityService<E>,
               protected router:Router,
@@ -20,7 +34,30 @@ export abstract class BaseTableComponent<E extends BaseEntity> implements OnInit
   ngOnInit() {
     console.debug('ngOnInit() ->');
     this.metadataArray = this.domainTemplate.metadataArray;
-    this.getAll();
+    this.page = 1;
+    this.itemsPerPage = 25;
+    this.total = 0;
+    this.calculatePaginationArray(this.total, this.itemsPerPage);
+    this.urlTable = this.domainTemplate.getTableUrl();
+    this.sub = this.route.queryParams.subscribe(
+      params => {
+        if (params[PAGE_QUERY_PARAM]) {
+          this.page = +params[PAGE_QUERY_PARAM];
+        } else {
+          this.page = 1
+        }
+        this.getAll();
+      }
+    );
+  }
+
+  /**
+   * Calculate pagination array for displaying of pagination component
+   * @param total - number of all domain entities
+   * @param itemPerPage - number per one page
+   */
+  private calculatePaginationArray(total: number, itemPerPage:number) {
+    this.paginationArray = new Array(Math.round(total / itemPerPage));
   }
 
   getValue(key:string, item:E):any {
@@ -51,7 +88,12 @@ export abstract class BaseTableComponent<E extends BaseEntity> implements OnInit
    */
   getAll():void {
     console.debug('getAll() ->');
-    this.crudService.getAll().subscribe(data => this.data = data);
+    this.crudService.getAllPagination(this.page, this.itemsPerPage).subscribe(data => {
+      this.total = data.size;
+      this.itemsPerPage = data.sizePerPage;
+      this.data = data.result;
+      this.calculatePaginationArray(this.total, this.itemsPerPage);
+    });
   }
 
   /**

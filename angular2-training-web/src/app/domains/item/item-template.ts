@@ -17,15 +17,12 @@ export class ItemTemplate extends BaseDomainTemplate<Item> {
     ];
   }
 
-  mapDomainFormMetadata(entity: Item): FormMetadata<any>[] {
-    return [
-      FormMetadata.getInstance<string>('name', 'textbox', true, 'Name', true, entity),
-      FormMetadata.getInstance<string>('description', 'textbox', true, 'Description', true, entity),
-    ];
+  getDetailTitle(): string {
+    return 'Item';
   }
 
   getTableUrl(): string {
-    return 'items';
+    return '/items';
   }
 
   getDetailUrl(): string {

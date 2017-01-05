@@ -9,9 +9,11 @@ export abstract class BaseDomainTemplate<E extends BaseEntity> {
     this.metadataArray = this.initMetadataArray();
   }
 
-  protected abstract initMetadataArray(): DomainMetadata[];
+  mapDomainFormMetadata(entity: E): FormMetadata<any>[] {
+    return FormMetadata.getFormMetadataArray(this.metadataArray);
+  }
 
-  abstract mapDomainFormMetadata(entity: E): FormMetadata<any>[];
+  protected abstract initMetadataArray(): DomainMetadata[];
 
   abstract getDetailUrl():string;
 
@@ -20,4 +22,6 @@ export abstract class BaseDomainTemplate<E extends BaseEntity> {
   abstract getPropertiesLables():string;
 
   abstract getTableTitle(): string;
+
+  abstract getDetailTitle(): string;
 }

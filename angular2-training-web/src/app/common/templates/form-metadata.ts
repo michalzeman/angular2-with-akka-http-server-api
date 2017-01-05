@@ -38,4 +38,8 @@ export class FormMetadata<V> {
     return new FormMetadata<T>(
       new DomainMetadata({key: key, controlType: type, table: table, label: label, required: required}), defVal);
   }
+
+  static getFormMetadataArray(metadataArray:DomainMetadata[]): FormMetadata<any>[] {
+    return metadataArray.map(item => new FormMetadata(item));
+  }
 }

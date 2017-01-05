@@ -19,9 +19,4 @@ export class ItemComponent extends BaseEntityComponent<Item> {
               route: ActivatedRoute, router: Router, itemTemplate: ItemTemplate) {
     super(entityService, formControlService, route, router, itemTemplate);
   }
-
-  protected getTitle(): string {
-    return 'Item';
-  }
-
 }

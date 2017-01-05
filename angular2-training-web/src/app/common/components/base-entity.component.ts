@@ -49,7 +49,9 @@ export abstract class BaseEntityComponent<E extends BaseEntity> implements OnIni
     );
   }
 
-  protected abstract getTitle(): string;
+  protected getTitle(): string {
+    return this.domainTemplate.getDetailTitle();
+  }
 
 
   /**
@@ -99,7 +101,7 @@ export abstract class BaseEntityComponent<E extends BaseEntity> implements OnIni
   }
 
   deleteEntity(entity: E): void {
-    console.debug('deleteEntity() ->')
+    console.debug('deleteEntity() ->');
     this.entityService.delete(entity);
   }
 

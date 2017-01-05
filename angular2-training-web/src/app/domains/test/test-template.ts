@@ -14,10 +14,8 @@ export class TestTemplate extends BaseDomainTemplate<Test> {
     return [new DomainMetadata({key: 'id', controlType: 'textbox', table: true, label: 'ID', required: true})];
   }
 
-  mapDomainFormMetadata(entity:Test):FormMetadata<any>[] {
-    let item = new FormMetadata<number>(
-      new DomainMetadata({key: 'id', controlType: 'textbox', table: false, label: 'Id', required: true}), entity);
-    return [item];
+  getDetailTitle(): string {
+    return 'Test';
   }
 
   getDetailUrl(): string {
@@ -25,7 +23,7 @@ export class TestTemplate extends BaseDomainTemplate<Test> {
   }
 
   getTableUrl(): string {
-    return 'tests';
+    return '/tests';
   }
 
   getPropertiesLables(): string {

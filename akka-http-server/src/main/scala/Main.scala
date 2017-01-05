@@ -39,10 +39,10 @@ object Main extends App with HealthRoutes {
 
   val bindingFuture: Future[ServerBinding] = Http().bindAndHandle(routes, settings.Http.interface, settings.Http.port)
 
-  bindingFuture.onFailure{ case ex: Exception =>
+  bindingFuture.failed.foreach(ex => {
     //TODO: add logging
     println(ex, "Failed to bind to {}:{}!", settings.Http.interface, settings.Http.port)
-  }
+  })
 
   bindingFuture map { binding =>
     logger.info(s"Server started on port {}", binding.localAddress.getPort)

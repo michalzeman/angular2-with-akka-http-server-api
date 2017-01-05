@@ -1,3 +1,4 @@
+import {isNullOrUndefined} from "util";
 export class DomainMetadata {
 
   key: string;
@@ -39,7 +40,13 @@ export class FormMetadata<V> {
       new DomainMetadata({key: key, controlType: type, table: table, label: label, required: required}), defVal);
   }
 
-  static getFormMetadataArray(metadataArray:DomainMetadata[]): FormMetadata<any>[] {
-    return metadataArray.map(item => new FormMetadata(item));
+  static getFormMetadataArray(metadataArray:DomainMetadata[], entity?: any): FormMetadata<any>[] {
+    return metadataArray.map(item => {
+      if (isNullOrUndefined(entity)) {
+        return new FormMetadata(item);
+      } else {
+        return new FormMetadata(item, entity);
+      }
+    });
   }
 }

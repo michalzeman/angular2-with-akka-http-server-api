@@ -10,7 +10,7 @@ export abstract class BaseDomainTemplate<E extends BaseEntity> {
   }
 
   mapDomainFormMetadata(entity: E): FormMetadata<any>[] {
-    return FormMetadata.getFormMetadataArray(this.metadataArray);
+    return FormMetadata.getFormMetadataArray(this.metadataArray, entity);
   }
 
   protected abstract initMetadataArray(): DomainMetadata[];

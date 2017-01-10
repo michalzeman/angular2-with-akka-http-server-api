@@ -1,0 +1,51 @@
+<nav aria-label="Page navigation" *ngIf="total > itemsPerPage">
+  <!--<ul class="pagination" *ngIf="(paginationArray.length <= pgnStartItems + pgnEndItems)">-->
+    <!--<li>-->
+      <!--<a [routerLink]="[urlTable]" [queryParams]="{page: 1}" aria-label="Previous">-->
+        <!--<span aria-hidden="true">&laquo;</span>-->
+      <!--</a>-->
+    <!--</li>-->
+    <!--<li *ngFor="let item of paginationArray; let i = index">-->
+      <!--<a [routerLink]="[urlTable]" [queryParams]="{page: (i + 1)}">{{i+1}}</a>-->
+    <!--</li>-->
+    <!--<li>-->
+      <!--<a [routerLink]="[urlTable]" [queryParams]="{page: (paginationArray.length)}" aria-label="Next">-->
+        <!--<span aria-hidden="true">&raquo;</span>-->
+      <!--</a>-->
+    <!--</li>-->
+  <!--</ul>-->
+  <ul class="pagination" *ngIf="(totalPages > pgnStartItems + pgnEndItems) && !isOnEnd()">
+    <li>
+      <a [routerLink]="[urlTable]" [queryParams]="{page: 1}" aria-label="Previous">
+        <span aria-hidden="true">&laquo;</span>
+      </a>
+    </li>
+    <li *ngFor="let startI of pgnStartArray; let i = index" [ngClass]="isActive(startI)">
+      <a [routerLink]="[urlTable]" [queryParams]="{page: startI}">{{startI}}</a>
+    </li>
+    <li><a>...</a></li>
+    <li *ngFor="let endI of pgnEndArray; let i = index" [ngClass]="isActive(endI)">
+      <a [routerLink]="[urlTable]" [queryParams]="{page: endI}">{{endI}}</a>
+    </li>
+    <li>
+      <a [routerLink]="[urlTable]" [queryParams]="{page: totalPages}" aria-label="Next">
+        <span aria-hidden="true">&raquo;</span>
+      </a>
+    </li>
+  </ul>
+  <ul class="pagination" *ngIf="isOnEnd()">
+    <li>
+      <a [routerLink]="[urlTable]" [queryParams]="{page: 1}" aria-label="Previous">
+        <span aria-hidden="true">&laquo;</span>
+      </a>
+    </li>
+    <li *ngFor="let endI of pgnEndArray; let i = index" [ngClass]="isActive(endI)">
+      <a [routerLink]="[urlTable]" [queryParams]="{page: endI}">{{endI}}</a>
+    </li>
+    <li>
+      <a [routerLink]="[urlTable]" [queryParams]="{page: totalPages}" aria-label="Next">
+        <span aria-hidden="true">&raquo;</span>
+      </a>
+    </li>
+  </ul>
+</nav>

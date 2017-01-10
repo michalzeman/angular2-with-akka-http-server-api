@@ -26,11 +26,12 @@ import {AlertComponent} from "./domains/alert/alert.component";
 import {FormItemComponent} from "./common/components/form-item.component";
 import {AddressComponent} from "./domains/address/address.component";
 import {AddressTableComponent} from "./domains/address/address-table.component";
+import {PaginationComponent} from "./common/components/ui/pagination/pagination.component";
 
 @NgModule({
   bootstrap:    [App],
   declarations: [App, Home, TestComponent, TestTableComponent, ItemComponent,
-    ItmeTableComponent, MenuComponent, AlertComponent, FormItemComponent, AddressComponent, AddressTableComponent],
+    ItmeTableComponent, MenuComponent, AlertComponent, FormItemComponent, AddressComponent, AddressTableComponent, PaginationComponent],
   imports:      [BrowserModule, FormsModule, ReactiveFormsModule, HttpModule, RouterModule.forRoot(APP_ROUTER_PROVIDERS)],
   providers:    [DelegateService, BroadcasterService, BroadcastEmmitterService, FormControlService],
 })

@@ -4,12 +4,14 @@ import {EntityService} from "../services/entity/base-entity.service";
 import {Router, ActivatedRoute}       from '@angular/router';
 import {BaseDomainTemplate} from "../templates/baseDomain.template";
 import {DomainMetadata} from "../templates/form-metadata";
+import {Observable, Subject} from "rxjs";
+import {PaginationModel} from "./ui/pagination/pagination-model";
 
 const PAGE_QUERY_PARAM = "page";
 
 export abstract class BaseTableComponent<E extends BaseEntity> implements OnInit, OnDestroy {
 
-  public itemsPerPage: number;
+  public itemsPerPage = 15;
 
   public page: number;
 
@@ -19,9 +21,13 @@ export abstract class BaseTableComponent<E extends BaseEntity> implements OnInit
 
   public urlTable: string;
 
-  public paginationArray: number[];
+  public pgnStartItems = 5;
+
+  public pgnEndItems = 5;
 
   public metadataArray: DomainMetadata[];
+
+  public pgnModelSubject: Subject<PaginationModel>;
 
   protected sub: any;
 
@@ -29,35 +35,59 @@ export abstract class BaseTableComponent<E extends BaseEntity> implements OnInit
               protected router:Router,
               protected route:ActivatedRoute,
               protected domainTemplate:BaseDomainTemplate<E>) {
+    this.pgnModelSubject = new Subject<PaginationModel>();
   }
 
   ngOnInit() {
     console.debug('ngOnInit() ->');
     this.metadataArray = this.domainTemplate.metadataArray;
     this.page = 1;
-    this.itemsPerPage = 25;
     this.total = 0;
-    this.calculatePaginationArray(this.total, this.itemsPerPage);
     this.urlTable = this.domainTemplate.getTableUrl();
     this.sub = this.route.queryParams.subscribe(
       params => {
-        if (params[PAGE_QUERY_PARAM]) {
-          this.page = +params[PAGE_QUERY_PARAM];
-        } else {
-          this.page = 1
-        }
+        // if (params[PAGE_QUERY_PARAM]) {
+        //   let pageQueryParam = +params[PAGE_QUERY_PARAM];
+        //   if (isNaN(pageQueryParam)) {
+        //     this.page = 1;
+        //   } else {
+        //     if (pageQueryParam < 0) {
+        //       pageQueryParam = 1;
+        //     }
+        //     this.page = pageQueryParam;
+        //   }
+        // } else {
+        //   this.page = 1;
+        // }
+        this.page = this.getQueryParams(params);
         this.getAll();
       }
     );
   }
 
   /**
-   * Calculate pagination array for displaying of pagination component
-   * @param total - number of all domain entities
-   * @param itemPerPage - number per one page
+   * Get Query param from the url
+   * @param params - url params
+   * @return {number}
    */
-  private calculatePaginationArray(total: number, itemPerPage:number) {
-    this.paginationArray = new Array(Math.round(total / itemPerPage));
+  protected getQueryParams(params:any): number {
+    if (params[PAGE_QUERY_PARAM]) {
+      let pageQueryParam = +params[PAGE_QUERY_PARAM];
+      if (isNaN(pageQueryParam)) {
+        pageQueryParam = 1;
+      } else {
+        if (pageQueryParam < 0) {
+          pageQueryParam = 1;
+        }
+      }
+      return pageQueryParam;
+    } else {
+      return 1;
+    }
+  }
+
+  getPgnModelObs(): Observable<PaginationModel> {
+    return this.pgnModelSubject.asObservable();
   }
 
   getValue(key:string, item:E):any {
@@ -92,7 +122,7 @@ export abstract class BaseTableComponent<E extends BaseEntity> implements OnInit
       this.total = data.size;
       this.itemsPerPage = data.sizePerPage;
       this.data = data.result;
-      this.calculatePaginationArray(this.total, this.itemsPerPage);
+      this.pgnModelSubject.next(new PaginationModel(this.itemsPerPage, this.page, this. total, this.urlTable));
     });
   }
 
@@ -124,5 +154,6 @@ export abstract class BaseTableComponent<E extends BaseEntity> implements OnInit
 
   ngOnDestroy() {
     console.debug('ngOnDestroy() ->');
+    this.pgnModelSubject.complete();
   }
 }

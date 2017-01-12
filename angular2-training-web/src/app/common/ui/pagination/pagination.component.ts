@@ -5,7 +5,7 @@ import {PaginationModel} from "./pagination-model";
 
 @Component({
   selector: 'pagination',
-  templateUrl: './pagination.html',
+  templateUrl: 'pagination.html',
 })
 export class PaginationComponent implements OnInit, OnDestroy {
 

@@ -5,7 +5,7 @@ import {ActivatedRoute, Router, } from "@angular/router";
 import {Test} from "./test";
 import {FormMetadata, DomainMetadata} from "../../common/templates/form-metadata";
 import {FormControlService} from "../../common/templates/form-control.service";
-import {FormItemComponent} from "../../common/components/form-item.component";
+import {FormItemComponent} from "../../common/ui/form-item.component";
 import {TestTemplate} from "./test-template";
 
 @Component({

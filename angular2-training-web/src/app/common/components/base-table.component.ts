@@ -5,7 +5,7 @@ import {Router, ActivatedRoute}       from '@angular/router';
 import {BaseDomainTemplate} from "../templates/baseDomain.template";
 import {DomainMetadata} from "../templates/form-metadata";
 import {Observable, Subject} from "rxjs";
-import {PaginationModel} from "./ui/pagination/pagination-model";
+import {PaginationModel} from "../ui/pagination/pagination-model";
 
 const PAGE_QUERY_PARAM = "page";
 

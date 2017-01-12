@@ -1,12 +1,11 @@
-/**
- * Created by zemo on 22/08/16.
- */
-import { provideRouter, RouterConfig } from '@angular/router';
+import { Routes } from '@angular/router';
 import {ItemComponent} from "./item.component";
-import {ItmeTableComponent} from "./item-table.component";
+import {ItemTableComponent} from "./item-table.component";
 
-export const itemRoutes: RouterConfig = [
+const routes: Routes = [
   { path: 'item/:id', component: ItemComponent},
   { path: 'item', component: ItemComponent},
-  { path: 'items', component: ItmeTableComponent},
+  { path: 'items', component: ItemTableComponent},
 ];
+
+export const ITEM_ROUTER_PROVIDERS:Routes = routes;

@@ -59,7 +59,9 @@ export abstract class BaseTableComponent<E extends BaseEntity> implements OnInit
         // } else {
         //   this.page = 1;
         // }
+
         this.page = this.getQueryParams(params);
+        console.debug('BaseTableComponent -> params: ',this.page);
         this.getAll();
       }
     );

@@ -12,7 +12,10 @@ import {Router, ActivatedRoute} from "@angular/router";
 })
 export class TestTableComponent extends BaseTableComponent<Test> {
 
-  constructor(crudService: TestService, router: Router, route: ActivatedRoute, domainTemplate: TestTemplate) {
+  constructor(crudService: TestService,
+              router: Router,
+              route: ActivatedRoute,
+              domainTemplate: TestTemplate) {
     super(crudService, router, route, domainTemplate);
   }
 

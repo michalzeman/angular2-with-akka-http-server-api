@@ -19,7 +19,7 @@ import {BroadcasterService} from "../../common/services/broadcaster.service";
 describe('Test', () => {
 
   class MockActivatedRoute {
-    params: Observable<Params>
+    params: Observable<Params>;
 
     constructor() {
       this.params = Observable.create(subscriber => {
@@ -37,7 +37,6 @@ describe('Test', () => {
         providers: [
           BaseRequestOptions,
           MockBackend,
-
           {
             provide: Http,
             useFactory: function (backend, defaultOptions) {
@@ -53,7 +52,6 @@ describe('Test', () => {
           DelegateService,
           BroadcastEmmitterService,
           BroadcasterService,
-
           {
             provide: ActivatedRoute,
             useClass: MockActivatedRoute

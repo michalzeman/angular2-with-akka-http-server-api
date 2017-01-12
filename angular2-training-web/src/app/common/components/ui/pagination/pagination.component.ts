@@ -13,9 +13,7 @@ export class PaginationComponent implements OnInit, OnDestroy {
 
   @Input() public pgnEndItems;
 
-  @Input() pgnModelOds: Observable<PaginationModel>;
-
-  private pgnModelSbn: Subscription;
+  @Input() public pgnModelOds: Observable<PaginationModel>;
 
   public totalPages: number;
 
@@ -36,7 +34,7 @@ export class PaginationComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.pgnModelSbn = this.pgnModelOds.subscribe(value => {
+    this.pgnModelOds.subscribe(value => {
       console.debug('PaginationComponent.refresh -> success');
       this.refresh(value);
     }, error => {
@@ -45,9 +43,7 @@ export class PaginationComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    if (!this.pgnModelSbn.closed) {
-      this.pgnModelSbn.unsubscribe();
-    }
+
   }
 
   /**
@@ -57,21 +53,37 @@ export class PaginationComponent implements OnInit, OnDestroy {
    */
   private calculatePaginationArray(total: number, itemPerPage: number) {
     this.totalPages = Math.round(total / itemPerPage);
-    this.pgnStartArray = new Array(this.pgnStartItems);
-    for (let i = 0; i < this.pgnStartItems; i++) {
-      if (this.page > 1) {
-        this.pgnStartArray[i] = (this.page - 1) + i;
+    this.pgnStartArray = this.initPgnStartArray(this.pgnStartItems, this.page);
+
+    this.pgnEndArray = this.initPgnEndArray(this.pgnEndItems, this.totalPages);
+  }
+
+  /**
+   * init start items for pagination
+   * @return {number[]}
+   */
+  private initPgnStartArray(pgnStartItems: number, page: number): number[] {
+    let pgnStartArray = new Array(pgnStartItems);
+    for (let i = 0; i < pgnStartItems; i++) {
+      if (page > 1) {
+        pgnStartArray[i] = (page - 1) + i;
       } else {
-        this.pgnStartArray[i] = (this.page) + i;
+        pgnStartArray[i] = (page) + i;
       }
     }
+    return pgnStartArray.filter(item => item > 0);
+  }
 
-    this.pgnEndArray = new Array(this.pgnEndItems);
-    for (let i = 0; i < this.pgnEndItems; i++) {
-      this.pgnEndArray[i] = (this.totalPages - i);
+  /**
+   * Init end items for pagination
+   * @return {number[]}
+   */
+  private initPgnEndArray(pgnEndItems: number, totalPages: number): number[] {
+    let pgnEndArray = new Array(pgnEndItems);
+    for (let i = 0; i < pgnEndItems; i++) {
+      pgnEndArray[i] = (totalPages - i);
     }
-
-    this.pgnEndArray = this.pgnEndArray.reverse()
+    return pgnEndArray.filter(item => item > 0).reverse();
   }
 
   protected refresh(pgnModel: PaginationModel): void {

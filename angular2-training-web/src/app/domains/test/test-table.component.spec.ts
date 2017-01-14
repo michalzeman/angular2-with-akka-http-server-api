@@ -3,14 +3,29 @@ import {Observable} from "rxjs";
 import {Params, ActivatedRoute, Router} from "@angular/router";
 import {MockBackend} from "@angular/http/testing";
 import {TestTableComponent} from "./test-table.component";
-import {BaseRequestOptions, Http} from "@angular/http";
+import {BaseRequestOptions, Http, ResponseOptions, Response} from "@angular/http";
 import {TestService} from "./test.service";
 import {FormControlService} from "../../common/templates/form-control.service";
 import {TestTemplate} from "./test-template";
 import {DelegateService} from "../../common/services/delegate.service";
 import {BroadcastEmmitterService} from "../../common/services/broadcast-emitter.servie";
 import {BroadcasterService} from "../../common/services/broadcaster.service";
+import {Test} from "./test";
+import {GetAllPagination} from "../../common/entities/get-all.pagination";
 
+function createResponse(): GetAllPagination<Test> {
+  let testData1 = new Test();
+  testData1.id = 1;
+  let testData2 = new Test();
+  testData2.id = 2;
+  let response: GetAllPagination<Test> = {
+    result: [testData2, testData1],
+    size: 12,
+    sizePerPage: 5,
+    page: 2
+  };
+  return response;
+}
 
 class MockRouter {
 }
@@ -64,7 +79,11 @@ describe("TestTableComponent test", () => {
 
   it('first query parameters OK', inject([TestTableComponent, MockBackend],
     (test, mockBackend) => {
+      let responseOptions = new ResponseOptions({body: createResponse()});
+      mockBackend.connections.subscribe(
+        c => c.mockRespond(new Response(responseOptions)));
       test.ngOnInit();
+      test.paginationModelObs.subscribe(data => console.log("Result test OK", data));
       expect(test.page).toEqual(2);
     }));
 
@@ -95,7 +114,11 @@ describe("TestTableComponent test NaN", () => {
 
   it('first query parameters NaN', inject([TestTableComponent, MockBackend],
     (test, mockBackend) => {
+      let responseOptions = new ResponseOptions({body: createResponse()});
+      mockBackend.connections.subscribe(
+        c => c.mockRespond(new Response(responseOptions)));
       test.ngOnInit();
+      test.paginationModelObs.subscribe(data => console.log("Result test OK", data));
       expect(test.page).toEqual(1);
     }));
 
@@ -127,7 +150,11 @@ describe("TestTableComponent test query params negative", () => {
 
   it('first query parameters NaN', inject([TestTableComponent, MockBackend],
     (test, mockBackend) => {
+      let responseOptions = new ResponseOptions({body: createResponse()});
+      mockBackend.connections.subscribe(
+        c => c.mockRespond(new Response(responseOptions)));
       test.ngOnInit();
+      test.paginationModelObs.subscribe(data => console.log("Result test OK", data));
       expect(test.page).toEqual(1);
     }));
 

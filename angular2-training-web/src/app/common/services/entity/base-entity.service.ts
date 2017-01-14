@@ -4,7 +4,7 @@ import {BaseEntity} from "../../entities/baseEntity";
 import {DelegateService} from "../delegate.service";
 import {Observable} from "rxjs/Rx";
 import {AlertMessage, ALERT_TYPE_DANGER} from "../../../domains/alert/alert-message";
-import {GetAllPationation} from "../../entities/get-all.pagination";
+import {GetAllPagination} from "../../entities/get-all.pagination";
 
 export interface ErrorResponse {
   data: string,
@@ -42,7 +42,7 @@ export interface EntityService<E extends BaseEntity> {
    * @param page - current page
    * @param items - items per page
    */
-  getAllPagination(page: number, items: number): Observable<GetAllPationation<E>>;
+  getAllPagination(page: number, items: number): Observable<GetAllPagination<E>>;
 
   /**
    * save entity
@@ -124,7 +124,7 @@ export abstract class BaseEntityServiceImpl<E extends BaseEntity> implements Ent
       .catch(error => this.handleError(error));
   }
 
-  getAllPagination(page: number, items: number): Observable<GetAllPationation<E>> {
+  getAllPagination(page: number, items: number): Observable<GetAllPagination<E>> {
     console.debug('getAllPagination ->');
     let params = new URLSearchParams();
     params.set('page', page.toString());

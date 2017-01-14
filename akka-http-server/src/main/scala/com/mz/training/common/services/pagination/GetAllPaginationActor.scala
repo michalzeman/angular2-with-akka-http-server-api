@@ -6,6 +6,7 @@ import com.mz.training.common.services.{GetAllPagination, GetAllPaginationResult
 import com.mz.training.domains.EntityId
 
 import scala.concurrent.duration._
+import scala.util.Failure
 
 
 case object TimeOutMsg
@@ -42,7 +43,11 @@ class GetAllPaginationActor[E <: EntityId](repository: ActorRef) extends Actor w
         }))
       context.become(processed)
     }
-    case _: Any => log.error("Unsupported operation!!!")
+    case failure:akka.actor.Status.Failure => {
+      log.error(s"${getClass.getCanonicalName} operation failed: ${failure.cause}")
+      senderAct.foreach(actorRef => actorRef ! failure)
+      context.become(processed)
+    }
   }
 
   /**

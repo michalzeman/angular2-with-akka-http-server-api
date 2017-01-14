@@ -36,7 +36,7 @@ abstract class AbstractRepositoryActor[E <: EntityId](jdbcActor: ActorRef)
     case msg: SelectByIdList => selectByIdList(msg) pipeTo sender
     case UnsupportedOperation => log.debug(s"sender sent UnsupportedOperation $sender")
     case SelectCount() => selectCount pipeTo sender
-    case msg:SelectPaging => selectPaging(msg) pipeTo sender
+    case msg: SelectPaging => selectPaging(msg) pipeTo sender
     case _ => sender ! UnsupportedOperation
   }
 
@@ -85,18 +85,11 @@ abstract class AbstractRepositoryActor[E <: EntityId](jdbcActor: ActorRef)
     */
   protected def selectPaging(msg: SelectPaging): Future[List[E]] = {
     log.debug(s"${getClass.getCanonicalName} selectPaging")
-    val p = Promise[List[E]]
-    Future {
-      val sqlQuery = s"select $sqlProjection from $tableName LIMIT ${msg.itemsPerPage} OFFSET ${msg.offset}"
-      (jdbcActor ? JdbcSelect(sqlQuery, mapResultSetList)).mapTo[JdbcSelectResult[mutable.MutableList[E]]].map(result => {
-        log.debug(s"${getClass.getCanonicalName} future execution of selectById id = " + Thread.currentThread.getId)
-        result.result.toList
-      }) onComplete {
-        case Success(s: List[E]) => p.success(s)
-        case Failure(exc) => p.failure(exc)
-      }
-    }
-    p.future
+    val sqlQuery = s"select $sqlProjection from $tableName order by $ID_COL LIMIT ${msg.itemsPerPage} OFFSET ${msg.offset}"
+    (jdbcActor ? JdbcSelect(sqlQuery, mapResultSetList)).mapTo[JdbcSelectResult[mutable.MutableList[E]]].map(result => {
+      log.debug(s"${getClass.getCanonicalName} future execution of selectById id = " + Thread.currentThread.getId)
+      result.result.toList
+    })
   }
 
   /**

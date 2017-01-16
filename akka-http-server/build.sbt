@@ -1,4 +1,5 @@
 enablePlugins(JavaAppPackaging)
+enablePlugins(DockerPlugin)
 
 organization := "io.forward"
 

@@ -74,21 +74,20 @@ export abstract class BaseEntityServiceImpl<E extends BaseEntity> implements Ent
     }
   }
 
-  protected handleError(error: any) {
+  protected handleError(error: Response) {
     // In a real world app, we might use a remote logging infrastructure
     // We'd also dig deeper into the error to get a better message
     // let errMsg = (error.message) ? error.message : error.status ? `${error.status} - ${error.statusText}` : 'Server error';
 
     console.error(error); // log to console instead
-    let statusCode = error.status.valueOf();
     let status = error.status;
-    switch (statusCode) {
-      case -1:
-        this.delegateService.emitAlert(new AlertMessage('System error', ALERT_TYPE_DANGER));
-        break;
-      default:
+    switch (error.status) {
+      case 500:
         let errMsg = error.text();
         this.delegateService.emitAlert(new AlertMessage(errMsg.toString(), ALERT_TYPE_DANGER));
+        break;
+      default:
+        this.delegateService.emitAlert(new AlertMessage('System error', ALERT_TYPE_DANGER));
         break;
     }
     return Observable.throw(error);

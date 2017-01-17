@@ -133,7 +133,7 @@ module.exports = function(env) {
           'ENV': JSON.stringify(METADATA.ENV),
           'NODE_ENV': JSON.stringify(METADATA.ENV),
           'API_URL': JSON.stringify(METADATA.API_URL),
-          'HMR': METADATA.HMR,
+          'HMR': METADATA.HMR
         }
       }),
 

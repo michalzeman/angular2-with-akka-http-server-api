@@ -3,6 +3,9 @@
  */
 
 const helpers = require('./helpers');
+const webpackMerge = require('webpack-merge'); // used to merge webpack configs
+const commonConfig = require('./webpack.common.js'); // the settings that are common to prod and dev
+
 
 /**
  * Webpack Plugins
@@ -14,6 +17,12 @@ const DefinePlugin = require('webpack/lib/DefinePlugin');
  * Webpack Constants
  */
 const ENV = process.env.ENV = process.env.NODE_ENV = 'test';
+const API_URL = process.env.API_URL || 'http://localhost:8080';
+const METADATA = webpackMerge(commonConfig({env: ENV}).metadata, {
+  ENV: ENV,
+  HMR: false,
+  API_URL: API_URL
+});
 
 /**
  * Webpack configuration
@@ -185,6 +194,8 @@ module.exports = function(options) {
     plugins: [
 
       /**
+       *
+       *
        * Plugin: DefinePlugin
        * Description: Define free variables.
        * Useful for having development builds with debug logging or adding global constants.
@@ -196,11 +207,13 @@ module.exports = function(options) {
       // NOTE: when adding more properties make sure you include them in custom-typings.d.ts
       new DefinePlugin({
         'ENV': JSON.stringify(ENV),
+        'API_URL': JSON.stringify(METADATA.API_URL),
         'HMR': false,
         'process.env': {
           'ENV': JSON.stringify(ENV),
           'NODE_ENV': JSON.stringify(ENV),
           'HMR': false,
+          'API_URL': JSON.stringify(METADATA.API_URL),
         }
       }),
 

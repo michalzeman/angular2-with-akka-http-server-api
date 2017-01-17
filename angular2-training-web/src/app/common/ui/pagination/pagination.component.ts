@@ -34,16 +34,17 @@ export class PaginationComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    console.debug('PaginationComponent.ngOnInit -> success');
     this.pgnModelOds.subscribe(value => {
-      console.debug('PaginationComponent.refresh -> success');
+      console.debug('PaginationComponent.subscribe -> success');
       this.refresh(value);
     }, error => {
-      console.error('PaginationComponent.refresh -> error: ', error);
+      console.error('PaginationComponent.subscribe -> error: ', error);
     })
   }
 
   ngOnDestroy(): void {
-
+    console.debug('PaginationComponent.ngOnDestroy ->');
   }
 
   /**
@@ -52,7 +53,7 @@ export class PaginationComponent implements OnInit, OnDestroy {
    * @param itemPerPage - number per one page
    */
   private calculatePaginationArray(total: number, itemPerPage: number) {
-    this.totalPages = Math.round(total / itemPerPage);
+    this.totalPages = Math.ceil(total / itemPerPage);
     this.pgnStartArray = this.initPgnStartArray(this.pgnStartItems, this.page);
 
     this.pgnEndArray = this.initPgnEndArray(this.pgnEndItems, this.totalPages);

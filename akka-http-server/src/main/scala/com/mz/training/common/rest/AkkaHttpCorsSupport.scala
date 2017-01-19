@@ -1,20 +1,25 @@
 package com.mz.training.common.rest
 
 import akka.http.scaladsl.model.HttpMethods._
-import akka.http.scaladsl.model.{HttpHeader, HttpResponse}
-import akka.http.scaladsl.model.headers.{Origin, `Access-Control-Allow-Credentials`, `Access-Control-Allow-Methods`, `Access-Control-Allow-Origin`}
+import akka.http.scaladsl.model.{HttpHeader, HttpMethods, HttpResponse}
+import akka.http.scaladsl.model.headers._
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.{Directive0, MethodRejection, RejectionHandler}
 
 trait CorsSupport {
 
-  protected def corsAllowOrigins: List[String]
+  protected val corsAllowOrigins: List[String] = List("*")
 
-  protected def corsAllowedHeaders: List[String]
+  protected val corsAllowedHeaders: List[String] = List("Origin", "X-Requested-With", "Content-Type", "Accept", "Accept-Encoding", "Accept-Language", "Host", "Referer", "User-Agent")
 
-  protected def corsAllowCredentials: Boolean
+  protected val corsAllowCredentials: Boolean = true
 
-  protected def optionsCorsHeaders: List[HttpHeader]
+  protected val optionsCorsHeaders: List[HttpHeader] = List[HttpHeader](
+    `Access-Control-Allow-Methods`(HttpMethods.GET, HttpMethods.PUT, HttpMethods.POST, HttpMethods.DELETE),
+    `Access-Control-Allow-Headers`(corsAllowedHeaders.mkString(", ")),
+    `Access-Control-Max-Age`(60 * 60 * 24 * 20), // cache pre-flight response for 20 days
+    `Access-Control-Allow-Credentials`(corsAllowCredentials)
+  )
 
   protected def corsRejectionHandler(allowOrigin: `Access-Control-Allow-Origin`) = RejectionHandler
     .newBuilder().handle {
@@ -49,4 +54,6 @@ trait CorsSupport {
         route
     })(context)
   }
+
+
 }

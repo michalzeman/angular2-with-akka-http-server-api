@@ -16,7 +16,7 @@ import com.mz.training.health.HealthRoutes
 import scala.annotation.tailrec
 import scala.concurrent.Future
 
-object Main extends App with HealthRoutes {
+object Main extends App with HealthRoutes with RestEndpointRoute {
   
   implicit val system = ActorSystem()
   implicit val materializer = ActorMaterializer()
@@ -35,7 +35,7 @@ object Main extends App with HealthRoutes {
   val dataSourceSupervisor = system.actorOf(DataSourceSupervisorActor.props, DataSourceSupervisorActor.actorName)
 
 //  val routes = logRequestResult("", InfoLevel)(userService.userRoutes ~ healthRoutes ~ addressRestService.routes ~ itemRestService.routes)
-  val routes = logRequestResult("", InfoLevel)(buildRoutes())
+  val routes = logRequestResult("", InfoLevel)(buildRoute())
 
   val bindingFuture: Future[ServerBinding] = Http().bindAndHandle(routes, settings.Http.interface, settings.Http.port)
 
@@ -48,7 +48,7 @@ object Main extends App with HealthRoutes {
     logger.info(s"Server started on port {}", binding.localAddress.getPort)
   } recoverWith { case _ => system.terminate() }
 
-  def buildRoutes(): Route = {
+  override def buildRoute(): Route = {
     @tailrec
     def chainRoutes(routes: List[RestEndpointRoute], route: Route): Route = {
       routes match {
@@ -56,6 +56,12 @@ object Main extends App with HealthRoutes {
         case Nil => route
       }
     }
-    chainRoutes(restEndpoinds, healthRoutes)
+//    cors {
+      handleExceptions(myExceptionHandler) {
+        pathPrefix("api") {
+          chainRoutes(restEndpoinds, healthRoutes)
+        }
+      }
+//    }
   }
 }

@@ -58,7 +58,7 @@ export abstract class BaseEntityServiceImpl<E extends BaseEntity> implements Ent
   constructor(protected delegateService: DelegateService,
               protected http: Http,
               url: string) {
-    this.url = API_URL + url
+    this.url = '/api' + url;
   }
 
   protected extractData(res: Response) {

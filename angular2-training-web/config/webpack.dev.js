@@ -97,6 +97,7 @@ module.exports = function(options) {
 
       library: 'ac_[name]',
       libraryTarget: 'var',
+
     },
 
     plugins: [
@@ -160,6 +161,11 @@ module.exports = function(options) {
       watchOptions: {
         aggregateTimeout: 300,
         poll: 1000
+      },
+      proxy: {
+        "/api/*": "http://127.0.0.1:8080/",
+        changeOrigin: true,
+        secure: false
       },
       outputPath: helpers.root('dist')
     },

@@ -1,10 +1,10 @@
 import {BaseEntity} from "../entities/baseEntity";
 import {OnInit, OnDestroy} from "@angular/core";
 import {EntityService} from "../services/entity/base-entity.service";
-import {Router, ActivatedRoute}       from '@angular/router';
+import {Router, ActivatedRoute} from "@angular/router";
 import {BaseDomainTemplate} from "../templates/baseDomain.template";
 import {DomainMetadata} from "../templates/form-metadata";
-import {Observable, Subject} from "rxjs";
+import {Subject} from "rxjs";
 import {PaginationModel} from "../ui/pagination/pagination-model";
 
 const PAGE_QUERY_PARAM = "page";
@@ -17,7 +17,7 @@ export abstract class BaseTableComponent<E extends BaseEntity> implements OnInit
 
   public total: number;
 
-  public data:E[];
+  public data: E[];
 
   public urlTable: string;
 
@@ -27,24 +27,28 @@ export abstract class BaseTableComponent<E extends BaseEntity> implements OnInit
 
   public metadataArray: DomainMetadata[];
 
-  public paginationModelObs: Observable<PaginationModel>;
+  // public paginationModelObs: Observable<PaginationModel>;
+
+  public paginationModelObs: Subject<PaginationModel>;
 
   protected sub: any;
 
-  constructor(protected crudService:EntityService<E>,
-              protected router:Router,
-              protected route:ActivatedRoute,
-              protected domainTemplate:BaseDomainTemplate<E>) {
+  constructor(protected crudService: EntityService<E>,
+              protected router: Router,
+              protected route: ActivatedRoute,
+              protected domainTemplate: BaseDomainTemplate<E>) {
     // this.page = 1;
     // this.total = 0;
     this.urlTable = this.domainTemplate.getTableUrl();
     // defer operator use just for postpone of data load until some subscriber is registered
-    this.paginationModelObs = Observable.defer(() => this.getAll());
+    // this.paginationModelObs = Observable.defer(() => this.getAll());
+    this.paginationModelObs = new Subject<PaginationModel>();
   }
 
   ngOnInit() {
     console.debug('ngOnInit() ->');
     this.metadataArray = this.domainTemplate.metadataArray;
+    this.getAll();
   }
 
   /**
@@ -52,7 +56,7 @@ export abstract class BaseTableComponent<E extends BaseEntity> implements OnInit
    * @param params - url params
    * @return {number}
    */
-  protected getQueryParams(params:any): number {
+  protected getQueryParams(params: any): number {
     if (params[PAGE_QUERY_PARAM]) {
       let pageQueryParam = +params[PAGE_QUERY_PARAM];
       if (isNaN(pageQueryParam)) {
@@ -68,7 +72,7 @@ export abstract class BaseTableComponent<E extends BaseEntity> implements OnInit
     }
   }
 
-  getValue(key:string, item:E):any {
+  getValue(key: string, item: E): any {
     if (key && item) {
       let splitted = key.split(".", 3);
       if (splitted.length > 1) {
@@ -94,12 +98,12 @@ export abstract class BaseTableComponent<E extends BaseEntity> implements OnInit
    * Get list of domain objects
    * TODO: it would be better to implement pagination for real implementation!!!
    */
-  getAll():Observable<PaginationModel> {
+  getAll(): void {
     console.debug('getAll() ->');
-    return this.route.queryParams.map(params => {
+    this.route.queryParams.map(params => {
       let page = this.getQueryParams(params);
       this.page = page;
-      console.debug('BaseTableComponent -> params: ',this.page);
+      console.debug('BaseTableComponent -> params: ', this.page);
       return page;
     }).flatMap(page => {
       return this.crudService.getAllPagination(page, this.itemsPerPage)
@@ -107,15 +111,17 @@ export abstract class BaseTableComponent<E extends BaseEntity> implements OnInit
       this.total = data.size;
       this.itemsPerPage = data.sizePerPage;
       this.data = data.result;
-      return new PaginationModel(this.itemsPerPage, this.page, this. total, this.urlTable);
-    });
+      return new PaginationModel(this.itemsPerPage, this.page, this.total, this.urlTable);
+    }).subscribe(
+      model => this.paginationModelObs.next(model),
+      error => console.error('getAll() -> error', error));
   }
 
   /**
    * edit detail of entity -> redirect to detail of entity
    * @param entity
    */
-  edit(entity:E):void {
+  edit(entity: E): void {
     console.debug('edit() ->');
     this.router.navigate([this.domainTemplate.getDetailUrl(), entity.id]);
   }
@@ -123,7 +129,7 @@ export abstract class BaseTableComponent<E extends BaseEntity> implements OnInit
   /**
    * Navigate to the detail
    */
-  addNew():void {
+  addNew(): void {
     console.debug('addNew() ->');
     this.router.navigate([this.domainTemplate.getDetailUrl()]);
   }
@@ -132,12 +138,16 @@ export abstract class BaseTableComponent<E extends BaseEntity> implements OnInit
    * remove/delete entity from table
    * @param entity
    */
-  remove(entity:E):void {
+  remove(entity: E): void {
     console.debug('remove() ->');
-    this.crudService.delete(entity).subscribe(success => this.getAll())
+    this.crudService.delete(entity).subscribe(success => {
+      console.debug("remove() -> success");
+      this.getAll();
+    });
   }
 
   ngOnDestroy() {
     console.debug('ngOnDestroy() ->');
+    this.paginationModelObs.complete();
   }
 }

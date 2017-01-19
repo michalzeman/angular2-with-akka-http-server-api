@@ -27,6 +27,6 @@
       </tr>
       </tbody>
     </table>
-    <pagination [pgnEndItems]="pgnEndItems" [pgnStartItems]="pgnStartItems" [pgnModelOds]="paginationModelObs"></pagination>
+    <pagination [pgnEndItems]="pgnEndItems" [pgnStartItems]="pgnStartItems" [pgnModelOds]="paginationModelObs.asObservable()"></pagination>
   </fieldset>
 </div>

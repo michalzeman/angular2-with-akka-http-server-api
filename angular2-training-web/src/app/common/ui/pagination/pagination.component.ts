@@ -1,6 +1,7 @@
 import {Component, Input, OnInit, OnDestroy} from "@angular/core";
 import {Observable, Subscription} from "rxjs";
 import {PaginationModel} from "./pagination-model";
+import {Utils} from "tslint/lib/lint";
 
 
 @Component({
@@ -14,6 +15,8 @@ export class PaginationComponent implements OnInit, OnDestroy {
   @Input() public pgnEndItems;
 
   @Input() public pgnModelOds: Observable<PaginationModel>;
+
+  private pgnModelSubscription: Subscription;
 
   public totalPages: number;
 
@@ -35,7 +38,7 @@ export class PaginationComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     console.debug('PaginationComponent.ngOnInit -> success');
-    this.pgnModelOds.subscribe(value => {
+    this.pgnModelSubscription = this.pgnModelOds.subscribe(value => {
       console.debug('PaginationComponent.subscribe -> success');
       this.refresh(value);
     }, error => {
@@ -45,6 +48,10 @@ export class PaginationComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     console.debug('PaginationComponent.ngOnDestroy ->');
+    if (this.pgnModelSubscription && !this.pgnModelSubscription.closed) {
+      this.pgnModelSubscription.unsubscribe();
+      console.debug('PaginationComponent.ngOnDestroy -> unsubscribe()');
+    }
   }
 
   /**

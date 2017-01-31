@@ -4,7 +4,7 @@ import {BaseEntity} from "../entities/baseEntity";
 import {EntityService} from "../services/entity/base-entity.service";
 import {FormControlService} from "../templates/form-control.service";
 import { FormGroup }                 from '@angular/forms';
-import {FormMetadata} from "../templates/form-metadata";
+import {FormMetadata, ListItem} from "../templates/form-metadata";
 import {Observable}     from 'rxjs/Rx';
 import {BaseDomainTemplate} from "../templates/baseDomain.template";
 
@@ -62,6 +62,17 @@ export abstract class BaseEntityComponent<E extends BaseEntity> implements OnIni
     console.debug('buildFormControlGroup ->', entity);
     this.formMetadata = this.mapDomainFormMetadata(entity);
     this.form = this.formControlService.getControlGroup(this.formMetadata);
+  }
+
+  protected setList<D>(key:string, dataSubscriber:Observable<D[]>, map:(D) => ListItem) {
+    this.formMetadata
+      .filter(item => item.metadata.key === key)
+      .map(item => {
+        dataSubscriber.subscribe(data => item.list = data.map(item => {
+          return map(item);
+        }));
+        return item;
+      });
   }
 
   /**

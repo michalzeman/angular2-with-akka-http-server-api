@@ -10,7 +10,8 @@
       <!--[id]="data.metadata.key" [type]="data.metadata.type">-->
 
       <select [id]="data.metadata.key" *ngSwitchCase="'dropdown'" [formControlName]="data.metadata.key" class="form-control">
-        <option *ngFor="let opt of data.values" [value]="opt.metadata.key">{{opt.value}}</option>
+        <!--<option *ngFor="let opt of values[data.metadata.key]" [value]="opt.metadata.key">{{opt.value}}</option>-->
+        <option *ngFor="let opt of data.list" [value]="opt.value">{{opt.label}}</option>
       </select>
 
     </div>

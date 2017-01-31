@@ -1,3 +1,6 @@
 import {BaseEntity} from "../../common/entities/baseEntity";
-export class Test extends BaseEntity {
+import {Item} from "../item/Item";
+export interface Test extends BaseEntity {
+  name: string;
+  list?: Item
 }

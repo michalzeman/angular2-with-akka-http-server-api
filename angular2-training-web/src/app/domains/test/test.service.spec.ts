@@ -37,8 +37,7 @@ describe('TestCrudService', () => {
   });
 
   it('TestCrudService first test', inject([TestService, MockBackend], (testCrudService, mockBackend) => {
-    let response = new Test();
-    response.id = 1;
+    let response = {id: 1};
 
     let responseOptions = new ResponseOptions({body: response});
     mockBackend.connections.subscribe(

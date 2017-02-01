@@ -14,7 +14,7 @@ export class TestTemplate extends BaseDomainTemplate<Test> {
     return [
       new DomainMetadata({key: 'id', controlType: 'textbox', table: true, label: 'ID', required: true}),
       new DomainMetadata({key:'name', controlType:'textbox', table:true, label:'Name', required:true}),
-      new DomainMetadata({key:'list', controlType:'dropdown', table:true, label:'List', required:true}),
+      new DomainMetadata({key:'itemId', controlType:'dropdown', table:true, label:'Item', required:true}),
     ];
   }
 

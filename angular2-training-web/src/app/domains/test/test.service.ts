@@ -20,7 +20,8 @@ export class TestService extends BaseEntityServiceImpl<Test> {
     },
     {
       id: 3,
-      name: "Test"
+      name: "Test",
+      itemId: 7
     }];
 
   constructor(delegateService: DelegateService, http: Http) {
@@ -30,11 +31,7 @@ export class TestService extends BaseEntityServiceImpl<Test> {
 
   get(id: number): Observable<Test> {
     console.debug('TestCrudServer.get() -> ', id);
-    return Observable.create(observer => {
-      let test: Test = {id: id, name: "Test"};
-      observer.next(test);
-      observer.complete();
-    });
+    return Observable.from(this.resultList.filter(item => item.id == id));
   }
 
   getAll(): Observable<Test[]> {

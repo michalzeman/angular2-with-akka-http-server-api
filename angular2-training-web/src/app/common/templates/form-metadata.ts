@@ -29,7 +29,7 @@ export class ValueObject {
   }
 }
 
-export interface ListItem {
+export interface DropdownListItem {
   key: any,
   label: any,
   value: any
@@ -39,7 +39,7 @@ export class FormMetadata<V> {
 
   public defValue: V;
 
-  list: ListItem[];
+  list: DropdownListItem[];
 
   constructor(public metadata: DomainMetadata,
               value?: any | ValueObject) {

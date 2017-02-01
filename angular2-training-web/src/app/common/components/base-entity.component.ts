@@ -4,7 +4,7 @@ import {BaseEntity} from "../entities/baseEntity";
 import {EntityService} from "../services/entity/base-entity.service";
 import {FormControlService} from "../templates/form-control.service";
 import { FormGroup }                 from '@angular/forms';
-import {FormMetadata, ListItem} from "../templates/form-metadata";
+import {FormMetadata, DropdownListItem} from "../templates/form-metadata";
 import {Observable}     from 'rxjs/Rx';
 import {BaseDomainTemplate} from "../templates/baseDomain.template";
 
@@ -64,7 +64,7 @@ export abstract class BaseEntityComponent<E extends BaseEntity> implements OnIni
     this.form = this.formControlService.getControlGroup(this.formMetadata);
   }
 
-  protected setList<D>(key:string, dataSubscriber:Observable<D[]>, map:(D) => ListItem) {
+  protected setList<D>(key:string, dataSubscriber:Observable<D[]>, map:(D) => DropdownListItem) {
     this.formMetadata
       .filter(item => item.metadata.key === key)
       .map(item => {
@@ -83,22 +83,18 @@ export abstract class BaseEntityComponent<E extends BaseEntity> implements OnIni
     return this.domainTemplate.mapDomainFormMetadata(entity);
   }
 
-  get(id: number) {
+  get(id: number): Observable<E> {
     console.debug('get() ->');
-    return Observable.create(observer => {
-      this.entityService.get(id).subscribe(
-        entity => {
-          this.buildFormControlGroup(entity);
-          observer.next(entity);
-          observer.complete(); // end of created observer
-        })
-    });
+    return this.entityService.get(id)
+      .map(entity => {
+        this.buildFormControlGroup(entity);
+        return entity;
+      })
   }
 
   save(entity: E): void {
     console.debug('save() ->');
     this.entityService.save(entity).subscribe(
-      // entity => this.buildFormControlGroup(entity)
       result => this.goBack()
     );
   }
@@ -106,7 +102,6 @@ export abstract class BaseEntityComponent<E extends BaseEntity> implements OnIni
   update(entity: E): void {
     console.debug('update() ->');
     this.entityService.update(entity).subscribe(
-      // entity => this.buildFormControlGroup(entity)
       result => this.goBack()
     );
   }
@@ -119,7 +114,6 @@ export abstract class BaseEntityComponent<E extends BaseEntity> implements OnIni
   onSubmit() {
     console.debug('onSubmit() ->', this.form.value);
     let model = <E>this.form.value;
-    // if (model && model.id) {
     if (this.model && this.model.id) {
       console.debug('onSubmit() -> update');
       model.id = this.model.id;

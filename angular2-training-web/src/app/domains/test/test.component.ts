@@ -3,7 +3,7 @@ import {BaseEntityComponent} from "../../common/components/base-entity.component
 import {TestService} from "./test.service";
 import {ActivatedRoute, Router, } from "@angular/router";
 import {Test} from "./test";
-import {FormMetadata, DomainMetadata, ListItem} from "../../common/templates/form-metadata";
+import {FormMetadata, DomainMetadata, DropdownListItem} from "../../common/templates/form-metadata";
 import {FormControlService} from "../../common/templates/form-control.service";
 import {FormItemComponent} from "../../common/ui/form-item.component";
 import {TestTemplate} from "./test-template";
@@ -29,21 +29,9 @@ export class TestComponent extends BaseEntityComponent<Test> {
 
   ngOnInit(): any {
     super.ngOnInit();
-    // this.formMetadata
-    //   .filter(item => {
-    //     return item.metadata.key === 'list'
-    //   })
-    //   .map(item => {
-    //     this.itemService.getItemList().subscribe(data => item.list = data.map(item => {
-    //       let newItem: ListItem = {key: item, label: item};
-    //       return newItem;
-    //     }));
-    //     return item;
-    //   });
-    this.setList('list', this.itemService.getItemList(), (item) => {
-      let newItem: ListItem = {key: item.id, label: item.name, value: item};
-      return newItem;
-    });
+    this.setList<Item>('itemId', this.itemService.getItemList(), (item) =>
+      <DropdownListItem>{key: item.id, label: item.name, value: item.id}
+    );
   }
 }
 

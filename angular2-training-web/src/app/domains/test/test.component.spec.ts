@@ -13,6 +13,7 @@ import {BroadcastEmmitterService} from "../../common/services/broadcast-emitter.
 import {BroadcasterService} from "../../common/services/broadcaster.service";
 import {ItemService} from "../item/item.service";
 import {Item} from "../item/Item";
+import {Provider, ClassProvider} from "@angular/core";
 
 describe('Test', () => {
 
@@ -52,8 +53,6 @@ describe('Test', () => {
     }
   }
 
-  let mockItemService = new MockItemService();
-
   beforeEach(() => {
     TestBed.configureTestingModule({
         providers: [
@@ -66,12 +65,10 @@ describe('Test', () => {
             },
             deps: [MockBackend, BaseRequestOptions]
           },
-
           {
-            provider: ItemService,
-            useValue: mockItemService
+            provide: ItemService,
+            useClass: MockItemService
           },
-
           TestService,
           FormControlService,
           TestComponent,

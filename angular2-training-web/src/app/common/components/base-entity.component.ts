@@ -1,14 +1,15 @@
 import {OnInit, OnDestroy} from "@angular/core";
 import {Router, ActivatedRoute}       from '@angular/router';
 import {BaseEntity} from "../entities/baseEntity";
-import {EntityService} from "../services/entity/base-entity.service";
+import {EntityService, BaseEntityServiceImpl} from "../services/entity/base-entity.service";
 import {FormControlService} from "../templates/form-control.service";
 import { FormGroup }                 from '@angular/forms';
 import {FormMetadata, DropdownListItem} from "../templates/form-metadata";
 import {Observable}     from 'rxjs/Rx';
 import {BaseDomainTemplate} from "../templates/baseDomain.template";
 
-export abstract class BaseEntityComponent<E extends BaseEntity> implements OnInit, OnDestroy {
+export abstract class BaseEntityComponent<E extends BaseEntity, S extends BaseEntityServiceImpl<E>, T extends BaseDomainTemplate<E>>
+  implements OnInit, OnDestroy {
 
   model: E = undefined;
 
@@ -20,11 +21,11 @@ export abstract class BaseEntityComponent<E extends BaseEntity> implements OnIni
 
   protected sub: any;
 
-  constructor(protected entityService: EntityService<E>,
+  constructor(protected entityService: S,
               protected formControlService: FormControlService,
               protected route: ActivatedRoute,
               protected router: Router,
-              protected domainTemplate:BaseDomainTemplate<E>) {
+              protected domainTemplate:T) {
   }
 
   /**

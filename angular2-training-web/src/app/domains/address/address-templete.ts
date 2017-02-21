@@ -19,6 +19,11 @@ export class AddressTemplate extends BaseDomainTemplate<Address> {
     return 'Address';
   }
 
+  // TODO: remove
+  getName(): string {
+    return 'Zemo';
+  }
+
   getTableUrl(): string {
     return '/addresses';
   }

@@ -14,10 +14,8 @@ import {Test} from "./test";
 import {GetAllPagination} from "../../common/entities/get-all.pagination";
 
 function createResponse(): GetAllPagination<Test> {
-  let testData1 = new Test();
-  testData1.id = 1;
-  let testData2 = new Test();
-  testData2.id = 2;
+  let testData1 = <Test>{id: 1};
+  let testData2 = <Test>{id:2};
   let response: GetAllPagination<Test> = {
     result: [testData2, testData1],
     size: 12,

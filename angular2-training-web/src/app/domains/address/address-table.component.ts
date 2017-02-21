@@ -11,7 +11,7 @@ import {AddressTemplate} from "./address-templete";
   providers: [AddressService, AddressTemplate],
   templateUrl: '../../common/components/base-table.html',
 })
-export class AddressTableComponent extends BaseTableComponent<Address> {
+export class AddressTableComponent extends BaseTableComponent<Address, AddressService, AddressTemplate> {
 
   constructor(crudService: AddressService, router: Router, route: ActivatedRoute, domainTemplate: AddressTemplate) {
     super(crudService, router, route, domainTemplate);

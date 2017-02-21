@@ -13,7 +13,7 @@ import {ItemTemplate} from "./item-template";
   providers: [ItemService, ItemTemplate],
   templateUrl: '../../common/components/base-entity.html',
 })
-export class ItemComponent extends BaseEntityComponent<Item> {
+export class ItemComponent extends BaseEntityComponent<Item, ItemService, ItemTemplate> {
 
   constructor(entityService: ItemService, formControlService: FormControlService,
               route: ActivatedRoute, router: Router, itemTemplate: ItemTemplate) {

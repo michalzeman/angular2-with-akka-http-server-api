@@ -1,8 +1,4 @@
-import {
-  TestBed,
-  inject
-} from '@angular/core/testing';
-
+import {TestBed, inject} from "@angular/core/testing";
 import {FormControlService} from "../../common/templates/form-control.service";
 import {TestService} from "./test.service";
 import {TestComponent} from "./test.component";
@@ -15,6 +11,8 @@ import {DelegateService} from "../../common/services/delegate.service";
 import {TestTemplate} from "./test-template";
 import {BroadcastEmmitterService} from "../../common/services/broadcast-emitter.servie";
 import {BroadcasterService} from "../../common/services/broadcaster.service";
+import {ItemService} from "../item/item.service";
+import {Item} from "../item/Item";
 
 describe('Test', () => {
 
@@ -32,6 +30,30 @@ describe('Test', () => {
   class MockRouter {
   }
 
+  class MockItemService {
+
+    constructor() {
+    }
+
+    getItemList(): Observable<Item[]> {
+      let resultList: Array<Item> = [
+        <Item>{
+          id: 1,
+          name: 'Test1',
+          description: 'Desc1'
+        },
+        <Item>{
+          id: 2,
+          name: 'Test2',
+          description: 'Desc2'
+        },
+      ];
+      return Observable.of(resultList);
+    }
+  }
+
+  let mockItemService = new MockItemService();
+
   beforeEach(() => {
     TestBed.configureTestingModule({
         providers: [
@@ -45,6 +67,11 @@ describe('Test', () => {
             deps: [MockBackend, BaseRequestOptions]
           },
 
+          {
+            provider: ItemService,
+            useValue: mockItemService
+          },
+
           TestService,
           FormControlService,
           TestComponent,
@@ -55,14 +82,18 @@ describe('Test', () => {
           {
             provide: ActivatedRoute,
             useClass: MockActivatedRoute
-          }, {provide: Router, useClass: MockRouter}]
+          },
+          {
+            provide: Router,
+            useClass: MockRouter
+          }
+        ]
       }
     );
   });
 
   it('first test', inject([TestComponent, MockBackend], (test, mockBackend) => {
-    let response = new Test();
-    response.id = 1;
+    let response = <Test>{id: 1};
 
     let responseOptions = new ResponseOptions({body: response});
     mockBackend.connections.subscribe(

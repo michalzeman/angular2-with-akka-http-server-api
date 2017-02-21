@@ -11,12 +11,11 @@ import {Component} from '@angular/core';
   providers: [AddressService, AddressTemplate],
   templateUrl: '../../common/components/base-entity.html',
 })
-export class AddressComponent extends BaseEntityComponent<Address> {
+export class AddressComponent extends BaseEntityComponent<Address, AddressService, AddressTemplate> {
 
 
   constructor(entityService: AddressService, formControlService: FormControlService, route: ActivatedRoute,
               router: Router, domainTemplate: AddressTemplate) {
     super(entityService, formControlService, route, router, domainTemplate);
   }
-
 }

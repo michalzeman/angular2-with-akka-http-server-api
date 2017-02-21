@@ -1,6 +1,6 @@
 import {BaseEntity} from "../entities/baseEntity";
 import {OnInit, OnDestroy} from "@angular/core";
-import {EntityService} from "../services/entity/base-entity.service";
+import {EntityService, BaseEntityServiceImpl} from "../services/entity/base-entity.service";
 import {Router, ActivatedRoute} from "@angular/router";
 import {BaseDomainTemplate} from "../templates/baseDomain.template";
 import {DomainMetadata} from "../templates/form-metadata";
@@ -9,7 +9,8 @@ import {PaginationModel} from "../ui/pagination/pagination-model";
 
 const PAGE_QUERY_PARAM = "page";
 
-export abstract class BaseTableComponent<E extends BaseEntity> implements OnInit, OnDestroy {
+export abstract class BaseTableComponent<E extends BaseEntity, S extends BaseEntityServiceImpl<E>, T extends BaseDomainTemplate<E>>
+  implements OnInit, OnDestroy {
 
   public itemsPerPage = 15;
 
@@ -33,10 +34,10 @@ export abstract class BaseTableComponent<E extends BaseEntity> implements OnInit
 
   protected sub: any;
 
-  constructor(protected crudService: EntityService<E>,
+  constructor(protected crudService: S,
               protected router: Router,
               protected route: ActivatedRoute,
-              protected domainTemplate: BaseDomainTemplate<E>) {
+              protected domainTemplate: T) {
     // this.page = 1;
     // this.total = 0;
     this.urlTable = this.domainTemplate.getTableUrl();

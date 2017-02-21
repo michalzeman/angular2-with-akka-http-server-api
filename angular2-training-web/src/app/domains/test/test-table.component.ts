@@ -10,7 +10,7 @@ import {Router, ActivatedRoute} from "@angular/router";
   providers: [TestService, TestTemplate],
   templateUrl: '../../common/components/base-table.html',
 })
-export class TestTableComponent extends BaseTableComponent<Test> {
+export class TestTableComponent extends BaseTableComponent<Test, TestService, TestTemplate> {
 
   constructor(crudService: TestService,
               router: Router,

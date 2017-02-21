@@ -15,7 +15,7 @@ import {Item} from "../item/Item";
   providers: [TestService, TestTemplate, ItemService],
   templateUrl: '../../common/components/base-entity.html',
 })
-export class TestComponent extends BaseEntityComponent<Test> {
+export class TestComponent extends BaseEntityComponent<Test, TestService, TestTemplate> {
 
   constructor(entityService:TestService,
               formControlService:FormControlService,

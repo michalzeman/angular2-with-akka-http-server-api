@@ -12,7 +12,7 @@ import {Router} from "@angular/router";
   providers: [ItemService, ItemTemplate],
   templateUrl: '../../common/components/base-table.html',
 })
-export class ItemTableComponent extends BaseTableComponent<Item> {
+export class ItemTableComponent extends BaseTableComponent<Item, ItemService, ItemTemplate> {
 
 
   constructor(crudService: ItemService, router: Router, route: ActivatedRoute, domainTemplate: ItemTemplate) {

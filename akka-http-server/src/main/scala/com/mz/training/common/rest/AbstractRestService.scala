@@ -11,7 +11,7 @@ import com.mz.training.common.services._
 import com.mz.training.domains.EntityId
 import spray.json.{DefaultJsonProtocol, RootJsonFormat}
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContextExecutor, Future}
 import scala.concurrent.duration._
 import scala.util.{Failure, Success}
 
@@ -23,9 +23,9 @@ abstract class AbstractRestService[E <: EntityId](implicit system: ActorSystem) 
 
   protected implicit val timeout: Timeout = 5000 milliseconds
 
-  protected implicit val systemAkka = system
+  protected implicit val systemAkka: ActorSystem = system
 
-  protected implicit val executorService = system.dispatcher
+  protected implicit val executorService: ExecutionContextExecutor = system.dispatcher
 
   protected implicit val format: RootJsonFormat[E] = getFormat
 

@@ -7,11 +7,12 @@ import com.mz.training.common.jdbc.JDBCConnectionActor._
 import com.mz.training.common.mappers.SqlDomainMapper
 import com.mz.training.common.messages.UnsupportedOperation
 import com.mz.training.domains.EntityId
+import com.typesafe.config.Config
 
 import scala.annotation.tailrec
 import scala.collection.mutable
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.duration._
+import scala.concurrent.duration.DurationInt
 import scala.concurrent.{Future, Promise}
 import scala.util.{Failure, Success}
 
@@ -25,7 +26,9 @@ abstract class AbstractRepositoryActor[E <: EntityId](jdbcActor: ActorRef)
 
   context.watch(jdbcActor)
 
-  protected implicit val timeout: Timeout = 2000.milliseconds
+  protected val sysConfig: Config = context.system.settings.config
+
+  protected implicit val timeout: Timeout = DurationInt(sysConfig.getInt("akka.actor.timeout.repository")).millisecond
 
   override def receive: Receive = {
     case SelectById(id) => selectById(id) pipeTo sender

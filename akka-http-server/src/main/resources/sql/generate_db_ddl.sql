@@ -1,10 +1,10 @@
 /** set shema name */
 
-SET SCHEMA 'akkademo';
-
 DROP SCHEMA IF EXISTS akkademo CASCADE;
 
 CREATE SCHEMA akkademo AUTHORIZATION postgres;
+
+SET SCHEMA 'akkademo';
 
 CREATE TABLE users (
   id  bigserial NOT NULL,

@@ -7,13 +7,16 @@ import akka.actor.{Actor, ActorLogging, Props}
 import com.mz.training.common.messages._
 import com.typesafe.config.Config
 import com.zaxxer.hikari.{HikariConfig, HikariDataSource}
+import jdk.nashorn.tools.Shell
+
+import scala.util.{Failure, Success, Try}
 
 class DataSourceActor extends Actor with ActorLogging {
 
   import DataSourceActor._
 
   private val sysConfig: Config = context.system.settings.config
-  private val dataSource = initDataSource
+  private val dataSource: HikariDataSource = initDataSource.getOrElse(null)
 
   override def receive: Receive = {
     case GetConnection => getConnection
@@ -46,7 +49,7 @@ class DataSourceActor extends Actor with ActorLogging {
     config.setIdleTimeout(TimeUnit.SECONDS.toMillis(10))
     config.setValidationTimeout(TimeUnit.SECONDS.toMillis(sysConfig.getInt(DATASOURCE_VALIDATIONTIMEOUT)))
     config.setJdbcUrl(sysConfig.getString(CONNECTION_URL))
-    config.setUsername(sysConfig.getString(DB_USER));
+    config.setUsername(sysConfig.getString(DB_USER))
     config.setPassword(sysConfig.getString(DB_PASSWORD))
     config.setAutoCommit(sysConfig.getBoolean(DATASOURCE_AUTOCOMMIT))
     config
@@ -57,15 +60,19 @@ class DataSourceActor extends Actor with ActorLogging {
     *
     * @return HikariDataSource object
     */
-  private def initDataSource: HikariDataSource = {
-    new HikariDataSource(configCon)
+  private def initDataSource: Try[HikariDataSource] = {
+    Try(new HikariDataSource(configCon))
   }
 
   @throws[Exception](classOf[Exception])
   override def postStop(): Unit = {
+    log.debug(s"${getClass.getCanonicalName} - going to stop")
     if (!dataSource.isClosed) dataSource.close()
     super.postStop()
   }
+
+  @scala.throws[Exception](classOf[Exception])
+  override def preStart(): Unit = super.preStart()
 }
 
 /**

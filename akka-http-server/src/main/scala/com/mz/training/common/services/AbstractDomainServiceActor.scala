@@ -9,6 +9,7 @@ import com.mz.training.common.messages.UnsupportedOperation
 import com.mz.training.common._
 import com.mz.training.common.services.pagination.GetAllPaginationActor
 import com.mz.training.domains.EntityId
+import com.typesafe.config.Config
 
 import scala.concurrent.duration._
 import scala.concurrent.{Future, Promise}
@@ -22,7 +23,10 @@ abstract class AbstractDomainServiceActor[E <: EntityId](repositoryBuilder:(Acto
 
   import scala.concurrent.ExecutionContext.Implicits.global
 
-  protected implicit val timeout: Timeout = 2000 milliseconds
+  protected val sysConfig: Config = context.system.settings.config
+
+  protected implicit val timeout: Timeout =
+    DurationInt(sysConfig.getInt("akka.actor.timeout.domain.services")).millisecond
 
   val repository = repositoryBuilder(context)
 

@@ -14,6 +14,7 @@ import spray.json.{DefaultJsonProtocol, RootJsonFormat}
 import scala.concurrent.{ExecutionContextExecutor, Future}
 import scala.concurrent.duration._
 import scala.util.{Failure, Success}
+import akka.event.{LoggingAdapter, Logging}
 
 /**
   * Created by zemi on 10/08/16.
@@ -31,6 +32,8 @@ abstract class AbstractRestService[E <: EntityId](implicit system: ActorSystem) 
 
   protected def getFormat: RootJsonFormat[E]
 
+  protected val log: LoggingAdapter = Logging(system, getClass)
+
   def stopActors(actors: ActorRef*): Unit = {
     actors.foreach(actor => actor ! PoisonPill)
   }
@@ -47,10 +50,12 @@ abstract class AbstractRestService[E <: EntityId](implicit system: ActorSystem) 
     path(getUriPath) {
       post {
         entity(as[E]) { entity =>
-          complete(
+          log.info(s"${getClass.getCanonicalName} -> post")
+          complete {
             getServiceActor.flatMap(actors => completeAndCleanUpAct {
               (actors._1 ? Create(entity)).mapTo[Created].map(result => Some(result.id.toString))
-            }(actors)))
+            }(actors))
+          }
         }
       }
     }
@@ -59,6 +64,7 @@ abstract class AbstractRestService[E <: EntityId](implicit system: ActorSystem) 
   protected def deleteById: Route = {
     path(getUriPath / LongNumber) { id =>
       delete {
+        log.info(s"${getClass.getCanonicalName} -> delete -> id: $id")
         complete {
           getServiceActor.flatMap(actors => completeAndCleanUpAct {
             (actors._1 ? DeleteById(id)).mapTo[Deleted].map(result => Deteled("Ok"))
@@ -72,15 +78,12 @@ abstract class AbstractRestService[E <: EntityId](implicit system: ActorSystem) 
     path(getUriPath / IntNumber) { id =>
       get {
         complete {
+          log.info(s"${getClass.getCanonicalName} -> get -> id: $id")
           getServiceActor.flatMap(actors => completeAndCleanUpAct {
             (actors._1 ? FindById(id)).mapTo[Found[E]].map(result => {
               result.results match {
-                case entity :: xs => {
-                  Some(entity)
-                }
-                case _ => {
-                  None
-                }
+                case entity :: xs => Some(entity)
+                case _ => None
               }
             })
           }(actors))
@@ -94,6 +97,7 @@ abstract class AbstractRestService[E <: EntityId](implicit system: ActorSystem) 
       put {
         entity(as[E]) { entity =>
           complete {
+            log.info(s"${getClass.getCanonicalName} -> put -> id: $id, entity: $entity")
             getServiceActor.flatMap(actors => completeAndCleanUpAct {
               (actors._1 ? Update(entity)).mapTo[UpdateResult[E]].map {
                 case u: Updated[E] => Some(u.entity)
@@ -111,6 +115,7 @@ abstract class AbstractRestService[E <: EntityId](implicit system: ActorSystem) 
       get {
         parameters('page.?, 'items.?) {
           (page, items) => {
+            log.info(s"${getClass.getCanonicalName} -> get -> page: $page, items: $items")
             complete {
               if (page.isDefined || items.isDefined) {
                 val pageVal = page match {
@@ -140,6 +145,7 @@ abstract class AbstractRestService[E <: EntityId](implicit system: ActorSystem) 
   }
 
   protected def getAllList:Future[Seq[E]] = {
+    log.info(s"${getClass.getCanonicalName} -> getAllList")
     getServiceActor.flatMap(actors => completeAndCleanUpAct({
       (actors._1 ? GetAll).mapTo[Found[E]].map(result => result.results)
     })(actors))

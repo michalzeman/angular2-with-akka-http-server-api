@@ -19,12 +19,13 @@ import {UiModule} from "./common/ui/ui.module";
 import {AddressModule} from "./domains/address/address.module";
 import {ItemModule} from "./domains/item/item.module";
 import {TestModule} from "./domains/test/test.module";
+import {UserModule} from "./domains/user/user.module";
 
 @NgModule({
   bootstrap:    [App],
   declarations: [App, Home, MenuComponent, AlertComponent],
   imports:      [BrowserModule, FormsModule, ReactiveFormsModule, HttpModule, RouterModule.forRoot(APP_ROUTER_PROVIDERS),
-    UiModule, AddressModule, ItemModule, TestModule],
+    UiModule, AddressModule, ItemModule, TestModule, UserModule],
   providers:    [],
 })
 export class AppModule {}

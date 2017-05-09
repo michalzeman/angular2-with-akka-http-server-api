@@ -6,7 +6,7 @@ const app = express();
 
 const HOST = process.env.HOST || 'localhost';
 const PORT = process.env.PORT || 8081;
-const API_HOST = process.env.API_HOST || 'localhost';
+const API_HOST = process.env.API_HOST || '10.201.90.51';
 const API_PORT = process.env.API_POR || '8080';
 const API_URL = 'http://'+API_HOST+':'+API_PORT;
 

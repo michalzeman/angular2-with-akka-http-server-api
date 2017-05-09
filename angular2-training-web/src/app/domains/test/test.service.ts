@@ -12,16 +12,19 @@ export class TestService extends BaseEntityServiceImpl<Test> {
   resultList: Array<Test> = [
     {
       id: 1,
-      name: "Test"
+      name: "Test",
+      desc: true
     },
     {
       id: 2,
-      name: "Test"
+      name: "Test",
+      desc: false
     },
     {
       id: 3,
       name: "Test",
-      itemId: 7
+      itemId: 7,
+      desc: true
     }];
 
   constructor(delegateService: DelegateService, http: Http) {

@@ -13,8 +13,10 @@ export class TestTemplate extends BaseDomainTemplate<Test> {
   protected initMetadataArray(): DomainMetadata[] {
     return [
       new DomainMetadata({key: 'id', controlType: 'textbox', table: true, label: 'ID', required: true}),
+      // new DomainMetadata({key:'name', controlType:'checkbox', table:true, label:'Name', required:true}),
       new DomainMetadata({key:'name', controlType:'textbox', table:true, label:'Name', required:true}),
       new DomainMetadata({key:'itemId', controlType:'dropdown', table:true, label:'Item', required:true}),
+      new DomainMetadata({key:'desc', controlType:'checkbox', table:false, label:'Desc', required:false}),
     ];
   }
 

@@ -19,7 +19,7 @@ const ENV = process.env.ENV = process.env.NODE_ENV = 'development';
 const HOST = process.env.HOST || 'localhost';
 const PORT = process.env.PORT || 3000;
 const HMR = helpers.hasProcessFlag('hot');
-const API_URL = process.env.API_URL || 'http://localhost:8080';
+const API_URL = process.env.API_URL || 'http://localhost:8080/';
 const METADATA = webpackMerge(commonConfig({env: ENV}).metadata, {
   host: HOST,
   port: PORT,
@@ -163,7 +163,7 @@ module.exports = function(options) {
         poll: 1000
       },
       proxy: {
-        "/api/*": "http://127.0.0.1:8080/",
+        "/api/*": API_URL,
         changeOrigin: true,
         secure: false
       },

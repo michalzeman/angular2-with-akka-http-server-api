@@ -1,6 +1,7 @@
 package com.mz.training.common.rest
 
 import akka.actor.{ActorRef, ActorSystem, PoisonPill}
+import akka.event.{Logging, LoggingAdapter}
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
@@ -11,10 +12,9 @@ import com.mz.training.common.services._
 import com.mz.training.domains.EntityId
 import spray.json.{DefaultJsonProtocol, RootJsonFormat}
 
-import scala.concurrent.{ExecutionContextExecutor, Future}
 import scala.concurrent.duration._
+import scala.concurrent.{ExecutionContextExecutor, Future}
 import scala.util.{Failure, Success}
-import akka.event.{LoggingAdapter, Logging}
 
 /**
   * Created by zemi on 10/08/16.
@@ -138,13 +138,13 @@ abstract class AbstractRestService[E <: EntityId](implicit system: ActorSystem) 
     }
   }
 
-  private def getAllPagination(pageVal: String, itemsVal: String):Future[GetAllPaginationResult[E]] = {
+  private def getAllPagination(pageVal: String, itemsVal: String): Future[GetAllPaginationResult[E]] = {
     getServiceActor.flatMap(actors => completeAndCleanUpAct {
       (actors._1 ? GetAllPagination[E](Integer.valueOf(pageVal), Integer.valueOf(itemsVal))).mapTo[GetAllPaginationResult[E]]
     }(actors))
   }
 
-  protected def getAllList:Future[Seq[E]] = {
+  protected def getAllList: Future[Seq[E]] = {
     log.info(s"${getClass.getCanonicalName} -> getAllList")
     getServiceActor.flatMap(actors => completeAndCleanUpAct({
       (actors._1 ? GetAll).mapTo[Found[E]].map(result => result.results)

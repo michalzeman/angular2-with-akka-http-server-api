@@ -3,7 +3,7 @@ package com.mz.training.common.jdbc
 import java.sql.{Connection, ResultSet, SQLException, Statement}
 
 import akka.actor._
-import com.mz.training.common.messages.{RetryOperation, UnsupportedOperation}
+import com.mz.training.common.messages.UnsupportedOperation
 import com.mz.training.common.factories.jdbc.DataSourceActorFactory
 import com.mz.training.common.jdbc.DataSourceActor.{ConnectionResult, GetConnection}
 import com.mz.training.common.jdbc.JDBCConnectionActor._
@@ -14,10 +14,9 @@ import scala.concurrent.duration._
 /**
  * Created by zemi on 1. 10. 2015.
  */
-class JDBCConnectionActor extends Actor with ActorLogging with DataSourceActorFactory {
+class JDBCConnectionActor extends Actor with ActorLogging with DataSourceActorFactory with Stash {
 
   import DataSourceActor.SCHEMA
-  import context.dispatcher
 
   private val sysConfig: Config = context.system.settings.config
   private val defaultSchema = sysConfig.getString(SCHEMA)
@@ -42,10 +41,10 @@ class JDBCConnectionActor extends Actor with ActorLogging with DataSourceActorFa
   }
 
   private def connectionClosed: Receive = {
-    case RetryOperation(opr, orgSender) => retryOperation(opr, orgSender)
+//    case RetryOperation(opr, orgSender) => retryOperation(opr, orgSender)
     case obj: Any => {
       log.info(s"Connection is closed! Going to ask new connection!")
-      retryOperation(obj, sender)
+//      retryOperation(obj, sender)
       askForConnection
     }
   }
@@ -56,14 +55,9 @@ class JDBCConnectionActor extends Actor with ActorLogging with DataSourceActorFa
       conInterceptorActor ! ActorStop
       con.setSchema(defaultSchema)
       connection = Some(con)
+      unstashAll()
       context.become(connectionReady)
     }
-    case opr: JdbcInsert => retryOperation(opr, sender)
-    case opr: JdbcUpdate => retryOperation(opr, sender)
-    case opr: JdbcDelete => retryOperation(opr, sender)
-    case JdbcSelect(query, mapper) => retryOperation(JdbcSelect(query, mapper), sender)
-    case RetryOperation(opr, orgSender) => retryOperation(opr, orgSender)
-    case UnsupportedOperation => log.debug(s"Receive => sender sent UnsupportedOperation $sender")
     case obj: Any => {
       log.warning(s"receive => Unsupported operation object ${obj.getClass}")
       sender() ! UnsupportedOperation
@@ -71,12 +65,6 @@ class JDBCConnectionActor extends Actor with ActorLogging with DataSourceActorFa
   }
 
   private def connectionReady: Receive = {
-    case RetryOperation(message, senderOrg) => message match {
-      case JdbcInsert(query) => insert(query, senderOrg)
-      case JdbcUpdate(query) => update(query, senderOrg)
-      case JdbcDelete(query) => delete(query, senderOrg)
-      case JdbcSelect(query, mapper) => select(query, mapper, senderOrg)
-    }
     case JdbcInsert(query) => insert(query, sender)
     case JdbcUpdate(query) => update(query, sender)
     case JdbcDelete(query) => delete(query, sender)
@@ -91,22 +79,11 @@ class JDBCConnectionActor extends Actor with ActorLogging with DataSourceActorFa
   }
 
   /**
-   * in case that connection is not ready it is scheduled sneding nex same message
- *
-   * @param obj - message
-   * @param orgSender - sender of original message
-   */
-  def retryOperation(obj: Any, orgSender: ActorRef): Unit = {
-    log.info(s"${getClass.getCanonicalName} retryOperation ->")
-    context.system.scheduler.scheduleOnce(
-      9.millisecond, self, RetryOperation(obj, orgSender))
-  }
-
-  /**
    * Ask for new connection from DataSourceActor
    */
   private def askForConnection: Unit = {
     log.info(s"${getClass.getCanonicalName} askForConnection ->")
+    stash()
     context.become(waitingForConnection)
     selectDataSourceActor ! GetConnection
     conInterceptorActor ! GetConnection

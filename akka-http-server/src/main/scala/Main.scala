@@ -17,31 +17,25 @@ import scala.annotation.tailrec
 import scala.concurrent.Future
 
 object Main extends App with HealthRoutes with RestEndpointRoute {
-  
+
   implicit val system = ActorSystem()
   implicit val materializer = ActorMaterializer()
-  implicit val ec = system.dispatcher 
+  implicit val ec = system.dispatcher
 
   val settings = Settings(system)
 
   val logger = Logging(system, getClass)
 
-  /** Use Guice for Dependency Injection. Remove if not required */
-//  private val injector = Guice.createInjector(UserServiceModule)
-//  private val userService = injector.getInstance(classOf[UserService])
-
-  private val restEndpoinds = List(new UserRestService, new AddressRestService, new ItemRestService)
+  private val restEndPoints = List(new UserRestService, new AddressRestService, new ItemRestService)
 
   val dataSourceSupervisor = system.actorOf(DataSourceSupervisorActor.props, DataSourceSupervisorActor.actorName)
 
-//  val routes = logRequestResult("", InfoLevel)(userService.userRoutes ~ healthRoutes ~ addressRestService.routes ~ itemRestService.routes)
   val routes = logRequestResult("", InfoLevel)(buildRoute())
 
-  val bindingFuture: Future[ServerBinding] = Http().bindAndHandle(routes, settings.Http.interface, settings.Http.port)
+  val bindingFuture: Future[ServerBinding] = Http().bindAndHandleAsync(Route.asyncHandler(routes), settings.Http.interface, settings.Http.port)
 
   bindingFuture.failed.foreach(ex => {
-    //TODO: add logging
-    println(ex, "Failed to bind to {}:{}!", settings.Http.interface, settings.Http.port)
+    logger.error("Failed to bind to {}:{}!", settings.Http.interface, settings.Http.port, ex)
   })
 
   bindingFuture map { binding =>
@@ -52,16 +46,15 @@ object Main extends App with HealthRoutes with RestEndpointRoute {
     @tailrec
     def chainRoutes(routes: List[RestEndpointRoute], route: Route): Route = {
       routes match {
-        case r::rl => chainRoutes(rl, r.getRoute ~ route)
+        case r :: rl => chainRoutes(rl, r.getRoute ~ route)
         case Nil => route
       }
     }
-//    cors {
-      handleExceptions(myExceptionHandler) {
-        pathPrefix("api") {
-          chainRoutes(restEndpoinds, healthRoutes)
-        }
+
+    handleExceptions(myExceptionHandler) {
+      pathPrefix("api") {
+        chainRoutes(restEndPoints, healthRoutes)
       }
-//    }
+    }
   }
 }

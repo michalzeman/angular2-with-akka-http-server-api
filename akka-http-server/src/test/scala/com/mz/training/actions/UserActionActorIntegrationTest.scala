@@ -28,8 +28,8 @@ with ImplicitSender {
 
   test("Registrate user") {
     val futures =
-      for (i <- 1 to 20) yield {
-        Thread sleep 0
+      for (i <- 1 to 20000) yield {
+        Thread sleep 1
         val userAction = system.actorOf(Props[UserActionActor])
         userAction ? RegistrateUser(User(0, "FirstNameTest_" + i, "LastNameTest_" + i, None, None),
           Address(0, "test_" + i, "82109", "9A" + i, "testCity_" + i))

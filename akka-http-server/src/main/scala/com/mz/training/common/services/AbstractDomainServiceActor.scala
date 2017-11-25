@@ -30,6 +30,8 @@ abstract class AbstractDomainServiceActor[E <: EntityId](repositoryBuilder:(Acto
 
   val repository = repositoryBuilder(context)
 
+  context.watch(repository)
+
   override def receive: Receive = {
     case c:Create[E] => create(c.entity) pipeTo sender
     case FindById(id) => findById(id) pipeTo sender

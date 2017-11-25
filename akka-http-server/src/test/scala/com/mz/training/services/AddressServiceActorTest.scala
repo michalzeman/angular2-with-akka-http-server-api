@@ -2,9 +2,11 @@ package com.mz.training.services
 
 import akka.actor.{ActorContext, ActorRef, ActorSystem, Props}
 import akka.testkit.{ImplicitSender, TestKit, TestProbe}
+import com.mz.training.common.jdbc.JDBCConnectionActor
 import com.mz.training.common.jdbc.JDBCConnectionActor._
 import com.mz.training.common.repositories.{Insert, Inserted, SelectCount, SelectPaging}
 import com.mz.training.common.services._
+import com.mz.training.common.supervisors.DataSourceSupervisorActor
 import com.mz.training.domains.address.Address
 import com.mz.training.domains.address.AddressServiceActor.FindOrCreateAddress
 import com.mz.training.domains.address.{AddressRepositoryActor, AddressServiceActor}
@@ -21,6 +23,10 @@ with FunSuiteLike
 with BeforeAndAfterAll
 with Matchers
 with ImplicitSender {
+
+  val dataSourceSupervisor = system.actorOf(DataSourceSupervisorActor.props, DataSourceSupervisorActor.actorName)
+
+  val jdbcConActor = system.actorOf(JDBCConnectionActor.props)
 
   test("0. Create address") {
 
@@ -118,8 +124,24 @@ with ImplicitSender {
     addressRepository.expectMsgType[SelectCount]
     addressRepository.reply(Some[Long](12234l))
     addressRepository.expectMsgType[SelectPaging]
-    addressRepository.reply(List(Address(12, "Street_Find", "zip_Find", "houseNum_Find", "City_Find")))
+    val resultList = List(Address(12, "Street_Find", "zip_Find", "houseNum_Find", "City_Find"))
+    addressRepository.reply(resultList)
 
-    expectMsgType[GetAllPaginationResult[Address]]
+    val result = expectMsgType[GetAllPaginationResult[Address]]
+
+    result.result should be(resultList)
   }
+
+  test("7. Real pagination test") {
+    val userRepository = system.actorOf(UserRepositoryActor.props(jdbcConActor))
+    val addressRepository = system.actorOf(AddressRepositoryActor.props(jdbcConActor))
+    val addressService = system.actorOf(Props(classOf[AddressServiceActor],
+      (context: ActorContext) => userRepository,
+      (context: ActorContext) => addressRepository))
+    addressService ! GetAllPagination[Address](1, 16)
+
+    val resultDoc = expectMsgType[GetAllPaginationResult[Address]]
+    resultDoc.result.size should not be(0)
+  }
+
  }

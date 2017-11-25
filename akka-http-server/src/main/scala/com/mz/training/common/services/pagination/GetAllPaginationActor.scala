@@ -18,7 +18,7 @@ class GetAllPaginationActor[E <: EntityId](repository: ActorRef) extends Actor w
 
   protected implicit val executorService = context.dispatcher
 
-  val timeout = 1.7 seconds
+  val timeout = 1.9 seconds
 
   var senderAct: Option[ActorRef] = None
 
@@ -65,7 +65,7 @@ class GetAllPaginationActor[E <: EntityId](repository: ActorRef) extends Actor w
     * @param msg - result
     */
   private def processSelectResult(msg: List[E]): Unit = {
-    log.info(s"${getClass.getCanonicalName}:processResult(msg) ->")
+    log.info(s"${getClass.getCanonicalName}:processSelectResult(msg) ->")
     result = msg
     processResult(result, size)
   }

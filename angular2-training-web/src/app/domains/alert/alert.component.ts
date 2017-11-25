@@ -2,6 +2,7 @@ import {Component, OnInit, OnDestroy} from '@angular/core';
 // import Error = protractor.error.Error;
 import {AlertMessage, ALERT_TYPE_INFO} from "./alert-message";
 import {BroadcasterService} from "../../common/services/broadcaster.service";
+import {Subscription} from "rxjs/Subscription";
 
 @Component({
   selector: 'error',
@@ -14,10 +15,12 @@ export class AlertComponent implements OnInit, OnDestroy {
 
   }
 
+  private eventSub: Subscription = Subscription.EMPTY;
+
   alertMessages: AlertMessage[] = [];
 
   ngOnInit(): void {
-    this.broadcasterService.on<AlertMessage>('alertComponent').subscribe(
+    this.eventSub = this.broadcasterService.on<AlertMessage>('alertComponent').subscribe(
       alert => {
         this.alertMessages.push(alert);
       }
@@ -25,7 +28,9 @@ export class AlertComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-
+    if (!this.eventSub.closed) {
+      this.eventSub.unsubscribe();
+    }
   }
 
 }

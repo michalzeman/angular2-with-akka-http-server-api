@@ -55,12 +55,12 @@ class JDBCConnectionActor extends Actor with ActorLogging with DataSourceActorFa
       conInterceptorActor ! ActorStop
       con.setSchema(defaultSchema)
       connection = Some(con)
-      unstashAll()
       context.become(connectionReady)
+      unstashAll()
     }
     case obj: Any => {
-      log.warning(s"receive => Unsupported operation object ${obj.getClass}")
-      sender() ! UnsupportedOperation
+      log.warning(s"receive => waitingForConnection ${obj.getClass}")
+      stash()
     }
   }
 

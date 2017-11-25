@@ -42,5 +42,7 @@ with ImplicitSender {
     def mapper (resultSet: ResultSet): Option[User] = {None}
     jdbcActor ! JdbcSelect(query, mapper)
     expectMsgAnyOf(JdbcSelectResult(None))
+    jdbcActor ! JdbcSelect(query, mapper)
+    expectMsgAnyOf(JdbcSelectResult(None))
   }
 }

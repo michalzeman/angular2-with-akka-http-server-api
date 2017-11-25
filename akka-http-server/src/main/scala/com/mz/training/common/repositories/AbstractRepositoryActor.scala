@@ -87,7 +87,7 @@ abstract class AbstractRepositoryActor[E <: EntityId](jdbcActor: ActorRef)
     * @return Future of result List
     */
   protected def selectPaging(msg: SelectPaging): Future[List[E]] = {
-    log.debug(s"${getClass.getCanonicalName} selectPaging")
+    log.debug(s"${getClass.getCanonicalName} going to selectPaging")
     val sqlQuery = s"select $sqlProjection from $tableName order by $ID_COL LIMIT ${msg.itemsPerPage} OFFSET ${msg.offset}"
     (jdbcActor ? JdbcSelect(sqlQuery, mapResultSetList)).mapTo[JdbcSelectResult[mutable.MutableList[E]]].map(result => {
       log.debug(s"${getClass.getCanonicalName} future execution of selectById id = " + Thread.currentThread.getId)

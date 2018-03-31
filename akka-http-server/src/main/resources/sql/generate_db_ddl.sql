@@ -2,7 +2,7 @@
 
 DROP SCHEMA IF EXISTS akkademo CASCADE;
 
-CREATE SCHEMA akkademo AUTHORIZATION postgres;
+CREATE SCHEMA akkademo AUTHORIZATION developer;
 
 SET SCHEMA 'akkademo';
 

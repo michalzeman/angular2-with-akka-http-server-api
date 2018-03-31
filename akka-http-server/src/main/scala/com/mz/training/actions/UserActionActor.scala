@@ -25,29 +25,30 @@ class UserActionActor extends Actor with ActorLogging {
   val userService = context.actorOf(UserServiceActor.props(userRepositoryProps, addressService))
   context.watch(userService)
 
-  var orgSender: ActorRef = _
-
   implicit val timeout: Timeout = 5 seconds
 
   override def receive: Receive = {
     case RegistrateUser(user, address) => {
-      orgSender = sender
       userService ! RegistrateUser(user, address)
+      context.become(registerUser(sender))
     }
+
+  }
+
+  private def registerUser(orgSender: ActorRef): Receive = {
     case UserRegistrated() => {
       log.debug("Registrate user - success!")
       jdbcConActor ! Commit
     }
-    case error: akka.actor.Status.Failure => {
-      log.error(error.cause, error.cause.getMessage)
+    case akka.actor.Status.Failure(e) => {
+      log.error(e, e.getMessage)
       jdbcConActor ! Rollback
-      orgSender ! error
+      orgSender ! e
     }
     case Committed => {
       orgSender ! true
-      context.stop(self)
+      self ! Stop
     }
-
   }
 
 }

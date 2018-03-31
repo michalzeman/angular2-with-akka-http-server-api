@@ -49,6 +49,6 @@ with ImplicitSender {
   }
 
   override protected def afterAll(): Unit = {
-    system.shutdown()
+    system.terminate()
   }
 }

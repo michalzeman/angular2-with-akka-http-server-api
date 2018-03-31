@@ -23,20 +23,24 @@ with ImplicitSender {
 
   implicit val timeOut: akka.util.Timeout = 2000.millisecond
 
-  override def afterAll(): Unit = {
-    system.shutdown()
+  override protected def beforeAll(): Unit = {
+    super.beforeAll()
+    system.actorOf(DataSourceSupervisorActor.props, DataSourceSupervisorActor.actorName)
   }
 
-  test("GetConnection timeout") {
-    val jdbcActor = system.actorOf(JDBCConnectionActor.props)
-    val query = "Select from users where id = 0"
-    def mapper (resultSet: ResultSet): Option[User] = {None}
-    jdbcActor ! JdbcSelect(query, mapper)
-    expectNoMsg(2 seconds)
+  override def afterAll(): Unit = {
+    system.terminate()
   }
+
+//  test("GetConnection timeout") {
+//    val jdbcActor = system.actorOf(JDBCConnectionActor.props)
+//    val query = "Select from users where id = 0"
+//    def mapper (resultSet: ResultSet): Option[User] = {None}
+//    jdbcActor ! JdbcSelect(query, mapper)
+//    expectNoMsg(2 seconds)
+//  }
 
   test("select operation") {
-    val dataSourceSupervisor = system.actorOf(DataSourceSupervisorActor.props, DataSourceSupervisorActor.actorName)
     val jdbcActor = system.actorOf(JDBCConnectionActor.props)
     val query = "Select from users where id = 0"
     def mapper (resultSet: ResultSet): Option[User] = {None}
@@ -45,4 +49,5 @@ with ImplicitSender {
     jdbcActor ! JdbcSelect(query, mapper)
     expectMsgAnyOf(JdbcSelectResult(None))
   }
+
 }
